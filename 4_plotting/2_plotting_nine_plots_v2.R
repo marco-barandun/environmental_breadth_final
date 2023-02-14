@@ -26,6 +26,10 @@ niche_data <- read_csv("./../3_generated_data/niche_data_final.csv") %>%
 #  mutate(ae_breadth = e_breadth/max(e_breadth)) %>%
 #  mutate(bin = ntile(l_median, n=40))
 
+zones <- read_csv("./../3_generated_data/zones.csv")
+
+niche_data <- left_join(niche_data, zones, by = "Species")
+
 # -------------------------------------------------------------------------------------------------------
 ##### Defining function for single normal plot
 
@@ -41,7 +45,8 @@ my_plotting <- function(df,
                         plot_type,
                         binning,
                         y_lim_s,
-                        y_lim_n) {
+                        y_lim_n,
+                        zonec) {
   
   df <- df %>% filter(.data[[gfc]] == gf_sel)
   mycolors <- c("#00000000", colorRampPalette(c("#FFFFD6FF", "yellow", "orange", "red"), alpha=TRUE)(20))
@@ -143,7 +148,12 @@ my_plotting <- function(df,
                        fun = mean, 
                        fun.min = function(x) mean(x)-sd(x)/sqrt(length(x)), 
                        fun.max = function(x) mean(x)+sd(x)/sqrt(length(x))) +
-      coord_cartesian(ylim=c(y_lim_s, y_lim_n))}
+      coord_cartesian(ylim=c(y_lim_s, y_lim_n)) +
+      geom_smooth(
+        aes(x = df[[xc]], color = df[[zonec]]),
+        method = "lm",
+        na.rm = TRUE)
+    }
     if (binning == "eq_distance") {p <- p + 
       geom_point(data = df, 
                  aes(x = .data[[xc]]),
@@ -220,7 +230,8 @@ nine_plots <- function(ds,
                                  plot_type = plot.type,
                                  binning = bin.ning,
                                  y_lim_s = 0,
-                                 y_lim_n = 10)
+                                 y_lim_n = 10,
+                                 zonec = "zone_n")
 
   median_lrange_s <- my_plotting(ds %>% filter(hemisphere == -1),
                                  xc = "lat_median_s", 
