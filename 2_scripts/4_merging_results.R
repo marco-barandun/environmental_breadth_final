@@ -56,8 +56,9 @@ raw_niche_data_herbs_mess <- raw_niche_data_herbs %>%
 ##### Generate the colums for the additional variables which will be computed below
 raw_niche_data_mess <- rbind(raw_niche_data_trees_mess, raw_niche_data_herbs_mess)
 
-write_csv(raw_niche_data_mess, "./../3_generated_data/raw_niche_data_mess.csv")
+#write_csv(raw_niche_data_mess, "./../3_generated_data/raw_niche_data_mess.csv")
 rm(list=setdiff(ls(), c("dir_archive", "raw_niche_data_mess")))
+raw_niche_data_mess <- read_csv("./../3_generated_data/raw_niche_data_mess.csv")
 
 niche_data <- raw_niche_data_mess %>%
   mutate(lat_range_mad_s = as.numeric(NA)) %>%
@@ -68,10 +69,7 @@ niche_data <- raw_niche_data_mess %>%
   mutate(lat_range_sd_g = as.numeric(NA)) %>%
   mutate(lat_median_s = as.numeric(NA)) %>%
   mutate(lat_median_n = as.numeric(NA)) %>%
-  mutate(lat_median_g = as.numeric(NA)) %>%
-  mutate(hemisphere = as.numeric(NA)) %>%
-  mutate(lat_n95q = as.numeric(NA)) %>%
-  mutate(lat_s05q = as.numeric(NA))
+  mutate(lat_median_g = as.numeric(NA))
 
 # -------------------------------------------------------------------------------------------------------
 ##### Reading in the species occurrences
@@ -92,59 +90,58 @@ occurrences_herbs <- read_csv(paste("./../1_original_data/herb_occs_elevation-10
 
 # -------------------------------------------------------------------------------------------------------
 ##### Separating the occurrences based on growthform and hemisphere
-southern_herbs <- occurrences_herbs %>%
+southern_occs_herbs <- occurrences_herbs %>%
   filter(hemisphere == -1) %>%
   filter(Species %in% raw_niche_data_mess$Species)
-northern_herbs <- occurrences_herbs %>%
+northern_occs_herbs <- occurrences_herbs %>%
   filter(hemisphere == 1) %>%
   filter(Species %in% raw_niche_data_mess$Species)
 
-southern_trees <- occurrences_trees %>%
+southern_occs_trees <- occurrences_trees %>%
   filter(hemisphere == -1) %>%
   filter(Species %in% raw_niche_data_mess$Species)
-northern_trees <- occurrences_trees %>%
+northern_occs_trees <- occurrences_trees %>%
   filter(hemisphere == 1) %>%
   filter(Species %in% raw_niche_data_mess$Species)
 
 # -------------------------------------------------------------------------------------------------------
 ##### Calculating latitudinal ranges per species per hemisphere; I know, it is not elegant, but strangely this is the only way it works
 # Southern trees
-niche_data[!is.na(match(niche_data$Species, unique(southern_trees$Species))),]$lat_range_mad_s <- tapply(southern_trees$latitude, southern_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(southern_trees$Species))),]$lat_range_sd_s <- tapply(southern_trees$latitude, southern_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(southern_trees$Species))),]$lat_median_s <- tapply(southern_trees$latitude, southern_trees$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_trees$Species), niche_data$Species),]$lat_range_mad_s <- tapply(southern_occs_trees$latitude, southern_occs_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_trees$Species), niche_data$Species),]$lat_range_sd_s <- tapply(southern_occs_trees$latitude, southern_occs_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_trees$Species), niche_data$Species),]$lat_median_s <- tapply(southern_occs_trees$latitude, southern_occs_trees$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
 # Northern trees
-niche_data[!is.na(match(niche_data$Species, unique(northern_trees$Species))),]$lat_range_mad_n <- tapply(northern_trees$latitude, northern_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(northern_trees$Species))),]$lat_range_sd_n <- tapply(northern_trees$latitude, northern_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(northern_trees$Species))),]$lat_median_n <- tapply(northern_trees$latitude, northern_trees$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(northern_occs_trees$Species), niche_data$Species),]$lat_range_mad_n <- tapply(northern_occs_trees$latitude, northern_occs_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(northern_occs_trees$Species), niche_data$Species),]$lat_range_sd_n <- tapply(northern_occs_trees$latitude, northern_occs_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(northern_occs_trees$Species), niche_data$Species),]$lat_median_n <- tapply(northern_occs_trees$latitude, northern_occs_trees$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
 # Global trees
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$lat_range_mad_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$lat_range_sd_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$lat_median_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(median(x, na.rm = TRUE), digits = 3))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$hemisphere <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) sign(median(x, na.rm = TRUE)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$lat_n95q <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(quantile(x, probs = .95, na.rm = TRUE), digits = 3))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_trees$Species))),]$lat_s05q <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(quantile(x, probs = .05, na.rm = TRUE), digits = 3))
+niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$lat_range_mad_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$lat_range_sd_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$lat_median_g <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(median(x, na.rm = TRUE), digits = 3))
+#niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$hemisphere <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) sign(median(x, na.rm = TRUE)))
+#niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$lat_n95q <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(quantile(x, probs = .95, na.rm = TRUE), digits = 3))
+#niche_data[match(unique(occurrences_trees$Species), niche_data$Species),]$lat_s05q <- tapply(occurrences_trees$latitude, occurrences_trees$Species, function(x) round(quantile(x, probs = .05, na.rm = TRUE), digits = 3))
 
 # Southern herbs
-niche_data[!is.na(match(niche_data$Species, unique(southern_herbs$Species))),]$lat_range_mad_s <- tapply(southern_herbs$latitude, southern_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(southern_herbs$Species))),]$lat_range_sd_s <- tapply(southern_herbs$latitude, southern_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(southern_herbs$Species))),]$lat_median_s <- tapply(southern_herbs$latitude, southern_herbs$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_herbs$Species), niche_data$Species),]$lat_range_mad_s <- tapply(southern_occs_herbs$latitude, southern_occs_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_herbs$Species), niche_data$Species),]$lat_range_sd_s <- tapply(southern_occs_herbs$latitude, southern_occs_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(southern_occs_herbs$Species), niche_data$Species),]$lat_median_s <- tapply(southern_occs_herbs$latitude, southern_occs_herbs$Species, function(x) abs(round(median(x, na.rm = TRUE), digits = 3)))
 # Northern herbs
-niche_data[!is.na(match(niche_data$Species, unique(northern_herbs$Species))),]$lat_range_mad_n <- tapply(northern_herbs$latitude, northern_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(northern_herbs$Species))),]$lat_range_sd_n <- tapply(northern_herbs$latitude, northern_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(northern_herbs$Species))),]$lat_median_n <- tapply(northern_herbs$latitude, northern_herbs$Species, function(x) round(median(abs(x), na.rm = TRUE), digits = 3))
+niche_data[match(unique(northern_occs_herbs$Species), niche_data$Species),]$lat_range_mad_n <- tapply(northern_occs_herbs$latitude, northern_occs_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(northern_occs_herbs$Species), niche_data$Species),]$lat_range_sd_n <- tapply(northern_occs_herbs$latitude, northern_occs_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(northern_occs_herbs$Species), niche_data$Species),]$lat_median_n <- tapply(northern_occs_herbs$latitude, northern_occs_herbs$Species, function(x) round(median(abs(x), na.rm = TRUE), digits = 3))
 # Global herbs
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$lat_range_mad_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$lat_range_sd_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$lat_median_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(median(x, na.rm = TRUE), digits = 3))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$hemisphere <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) sign(median(x, na.rm = TRUE)))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$lat_n95q <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(quantile(x, probs = .95, na.rm = TRUE), digits = 3))
-niche_data[!is.na(match(niche_data$Species, unique(occurrences_herbs$Species))),]$lat_s05q <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(quantile(x, probs = .05, na.rm = TRUE), digits = 3))
-
+niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$lat_range_mad_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) abs(round(mad(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$lat_range_sd_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) abs(round(sd(x, na.rm = TRUE), digits = 3)))
+niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$lat_median_g <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(median(x, na.rm = TRUE), digits = 3))
+#niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$hemisphere <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) sign(median(x, na.rm = TRUE)))
+#niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$lat_n95q <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(quantile(x, probs = .95, na.rm = TRUE), digits = 3))
+#niche_data[match(unique(occurrences_herbs$Species), niche_data$Species),]$lat_s05q <- tapply(occurrences_herbs$latitude, occurrences_herbs$Species, function(x) round(quantile(x, probs = .05, na.rm = TRUE), digits = 3))
 # Adding global parameters
-niche_data <- niche_data %>%
-  mutate(lat_range_mad_max = pmax(lat_range_mad_s, lat_range_mad_n, na.rm = TRUE)) %>%
-  mutate(lat_range_sd_max = pmax(lat_range_sd_s, lat_range_sd_n, na.rm = TRUE)) %>%
-  mutate(lat_median_ave = rowMeans(niche_data[,c("lat_median_s", "lat_median_n")], na.rm = TRUE)*niche_data$hemisphere)
+#niche_data <- niche_data %>%
+#  mutate(lat_range_mad_max = pmax(lat_range_mad_s, lat_range_mad_n, na.rm = TRUE)) %>%
+#  mutate(lat_range_sd_max = pmax(lat_range_sd_s, lat_range_sd_n, na.rm = TRUE)) %>%
+#  mutate(lat_median_ave = rowMeans(niche_data[,c("lat_median_s", "lat_median_n")], na.rm = TRUE)*niche_data$hemisphere)
 
 # -------------------------------------------------------------------------------------------------------
 # Check if the number of NAs is reasonable. Most columns should not have any NAs, elevation might have some
@@ -157,5 +154,5 @@ niche_data <- niche_data %>%
   filter(or.10p.avg < 0.3)
 
 # Export
-write_csv(niche_data, "./../3_generated_data/niche_data_final.csv")
+write_csv(niche_data, "./../3_generated_data/niche_data_final_v3.csv")
 rm(list=setdiff(ls(), c("dir_archive", "niche_data")))

@@ -17,12 +17,13 @@ allres_eblr <- as.data.frame(allres_eblr)
 allres_lmeb <- as.data.frame(allres_lmeb)
 allres_lmlr <- as.data.frame(allres_lmlr)
 
+# Before running this script, run 5_coefficients.R
+
 # -------------------------------------------------------------------------------------------------------
 ##### Import and filter data
 
-niche_data <- read_csv("./../3_generated_data/niche_data_final_HemisphereSpecific.csv") %>%
-  mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
-  .[!with(.,is.na(lat_median_n) & is.na(lat_median_s)),]
+#hs_sp <- read_csv("./../3_generated_data/hs_sp_final_v2.csv") %>%
+#  mutate(e_breadth = (env_breadth*mess)^(1/4)); range(hs_sp$e_breadth)
 #  rename(l_median = lat_median) %>%   # Define which column to use as median latitude
 #  mutate(l_range = (lat_n95q+90)-(lat_s05q+90)) %>%     # Define which column to use as latitudinal range #(lat_n95q+90)-(lat_s05q+90) lat_range_mad
 #  mutate(e_breadth = env_breadth) %>%     # Define which column to use as environmental breadth
@@ -31,9 +32,16 @@ niche_data <- read_csv("./../3_generated_data/niche_data_final_HemisphereSpecifi
 #  mutate(ae_breadth = e_breadth/max(e_breadth)) %>%
 #  mutate(bin = ntile(l_median, n=40))
 
-zones <- read_csv("./../3_generated_data/zones.csv")
+#zones <- read_csv("./../3_generated_data/zones_v2.csv")
 
-niche_data <- left_join(niche_data, zones, by = "Species"); ds <- niche_data
+#hs_sp <- left_join(hs_sp, zones, by = "Species"); ds <- hs_sp
+
+#hs_sp <- obs
+
+hs_sp <- read_csv("./../3_generated_data/niche_data_final_HSsp.csv") %>%
+  mutate(e_breadth = (env_breadth*mess)^(1/4)); range(hs_sp$e_breadth)
+zones <- read_csv("./../3_generated_data/zones_v3.csv")
+hs_sp <- left_join(hs_sp, zones, by = "Species"); ds <- hs_sp
 
 # -------------------------------------------------------------------------------------------------------
 ##### Defining function for single normal plot
@@ -140,7 +148,7 @@ my_plotting_g <- function(df,
 
 # Figure 1: Rapoport's rule
 
-allres_lmlr <- allres_lmlr %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
+allres_lmlr_2 <- allres_lmlr %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
       
 rapoport <- function(ds,
                        #growthform = "tree",
@@ -149,7 +157,7 @@ rapoport <- function(ds,
 
   ### Trees
   
-  lm_lr_t_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  lm_lr_t_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "lat_median_n", 
                            yc = "lat_range_sd_n",
                            gfc = "growthform",
@@ -165,13 +173,13 @@ rapoport <- function(ds,
                            x_lim = 70,
                            zonec = "zone_n",
                            label_trop = paste("Slope:\n",
-                                              allres_lmlr %>%
+                                              allres_lmlr_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(growthform == "tree") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope:\n",
-                                                allres_lmlr %>%
+                                                allres_lmlr_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(growthform == "tree") %>%
                                                   filter(zone == "else") %>%
@@ -181,7 +189,7 @@ rapoport <- function(ds,
                            label_notrop_x = 35,
                            label_notrop_y = 7)
 
-  lm_lr_t_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  lm_lr_t_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "lat_median_s", 
                            yc = "lat_range_sd_s",
                            gfc = "growthform",
@@ -197,13 +205,13 @@ rapoport <- function(ds,
                            x_lim = 70,
                            zonec = "zone_s",
                            label_trop = paste("Slope:\n",
-                                              allres_lmlr %>%
+                                              allres_lmlr_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "tree") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope:\n",
-                                                allres_lmlr %>%
+                                                allres_lmlr_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "tree") %>%
                                                   filter(zone == "else") %>%
@@ -229,7 +237,7 @@ rapoport <- function(ds,
   
   ### Herbs
   
-  lm_lr_h_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  lm_lr_h_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "lat_median_n", 
                            yc = "lat_range_sd_n",
                            gfc = "growthform",
@@ -245,13 +253,13 @@ rapoport <- function(ds,
                            x_lim = 70,
                            zonec = "zone_n",
                            label_trop = paste("Slope:\n",
-                                              allres_lmlr %>%
+                                              allres_lmlr_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope:\n",
-                                                allres_lmlr %>%
+                                                allres_lmlr_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -261,7 +269,7 @@ rapoport <- function(ds,
                            label_notrop_x = 35,
                            label_notrop_y = 7)
   
-  lm_lr_h_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  lm_lr_h_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "lat_median_s", 
                            yc = "lat_range_sd_s",
                            gfc = "growthform",
@@ -277,13 +285,13 @@ rapoport <- function(ds,
                            x_lim = 70,
                            zonec = "zone_s",
                            label_trop = paste("Slope:\n",
-                                              allres_lmlr %>%
+                                              allres_lmlr_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope:\n",
-                                                allres_lmlr %>%
+                                                allres_lmlr_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -325,18 +333,18 @@ rapoport <- function(ds,
   return(p)
 }
 
-figure1 <- rapoport(ds = niche_data,
+figure1 <- rapoport(ds = hs_sp,
                     #growthform = "herb",
                     plot.type = "p_mean",
                     bin.ning = "eq_points")
 
-ggsave("./../tmp/figure1_HS.jpg",
+ggsave("./../tmp/figure1_v3_HSsp.jpg",
        width = 4000, height = 2000, units = "px")
 
 # -------------------------------------------------------------------------------------------------------
 # Figure 2: Environmental breadth and latitudinal range
 
-allres_eblr <- allres_eblr %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
+allres_eblr_2 <- allres_eblr %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
 
 range <- function(ds,
                      #growthform = "tree",
@@ -345,7 +353,7 @@ range <- function(ds,
   
   ### Trees
   
-  eb_lr_t_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  eb_lr_t_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "e_breadth", 
                            yc = "lat_range_sd_n",
                            gfc = "growthform",
@@ -361,13 +369,13 @@ range <- function(ds,
                            x_lim = 1,
                            zonec = "zone_n",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_eblr %>%
+                                              allres_eblr_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(zone == "tropical") %>%
                                                 filter(growthform == "tree") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_eblr %>%
+                                                allres_eblr_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(zone == "else") %>%
                                                   filter(growthform == "tree") %>%
@@ -377,7 +385,7 @@ range <- function(ds,
                            label_notrop_x = 0.5,
                            label_notrop_y = 9)
   
-  eb_lr_t_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  eb_lr_t_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "e_breadth", 
                            yc = "lat_range_sd_s",
                            gfc = "growthform",
@@ -393,13 +401,13 @@ range <- function(ds,
                            x_lim = 1,
                            zonec = "zone_s",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_eblr %>%
+                                              allres_eblr_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "tree") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_eblr %>%
+                                                allres_eblr_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "tree") %>%
                                                   filter(zone == "else") %>%
@@ -425,7 +433,7 @@ range <- function(ds,
   
   ### Herbs
   
-  eb_lr_h_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  eb_lr_h_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "e_breadth", 
                            yc = "lat_range_sd_n",
                            gfc = "growthform",
@@ -441,13 +449,13 @@ range <- function(ds,
                            x_lim = 1,
                            zonec = "zone_n",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_eblr %>%
+                                              allres_eblr_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_eblr %>%
+                                                allres_eblr_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -457,7 +465,7 @@ range <- function(ds,
                            label_notrop_x = 0.5,
                            label_notrop_y = 9)
   
-  eb_lr_h_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  eb_lr_h_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "e_breadth", 
                            yc = "lat_range_sd_s",
                            gfc = "growthform",
@@ -473,13 +481,13 @@ range <- function(ds,
                            x_lim = 1,
                            zonec = "zone_s",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_eblr %>%
+                                              allres_eblr_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_eblr %>%
+                                                allres_eblr_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -522,18 +530,18 @@ range <- function(ds,
 }
 
 # tropical = dashed
-figure2 <- range(ds = niche_data,
+figure2 <- range(ds = hs_sp,
                     #growthform = "herb",
                     plot.type = "p_mean",
                     bin.ning = "eq_points")
 
-ggsave("./../tmp/figure2.jpg",
+ggsave("./../tmp/figure2_v3_HS.jpg",
        width = 4000, height = 2000, units = "px")
 
 # -------------------------------------------------------------------------------------------------------
 # Figure 3: Environmental breadth and median latitude
 
-allres_lmeb <- allres_lmeb %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
+allres_lmeb_2 <- allres_lmeb %>% mutate(hemisphere = ifelse(hemisphere == "North", 1, -1))
 
 lmebreadth <- function(ds,
                   #growthform = "tree",
@@ -542,7 +550,7 @@ lmebreadth <- function(ds,
   
   ### Trees
   
-  lm_eb_t_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  lm_eb_t_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "lat_median_n", 
                            yc = "e_breadth",
                            gfc = "growthform",
@@ -558,13 +566,13 @@ lmebreadth <- function(ds,
                            x_lim = 70,
                            zonec = "zone_n",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_lmeb %>%
+                                              allres_lmeb_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(growthform == "tree") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_lmeb %>%
+                                                allres_lmeb_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(growthform == "tree") %>%
                                                   filter(zone == "else") %>%
@@ -574,7 +582,7 @@ lmebreadth <- function(ds,
                            label_notrop_x = 35,
                            label_notrop_y = 0.9)
   
-  lm_eb_t_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  lm_eb_t_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "lat_median_s", 
                            yc = "e_breadth",
                            gfc = "growthform",
@@ -590,13 +598,13 @@ lmebreadth <- function(ds,
                            x_lim = 70,
                            zonec = "zone_s",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_lmeb %>%
+                                              allres_lmeb_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "tree") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_lmeb %>%
+                                                allres_lmeb_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "tree") %>%
                                                   filter(zone == "else") %>%
@@ -622,7 +630,7 @@ lmebreadth <- function(ds,
   
   ### Herbs
   
-  lm_eb_h_n <- my_plotting(ds %>% filter(hemisphere == 1),
+  lm_eb_h_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
                            xc = "lat_median_n", 
                            yc = "e_breadth",
                            gfc = "growthform",
@@ -638,13 +646,13 @@ lmebreadth <- function(ds,
                            x_lim = 70,
                            zonec = "zone_n",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_lmeb %>%
+                                              allres_lmeb_2 %>%
                                                 filter(hemisphere == 1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_lmeb %>%
+                                                allres_lmeb_2 %>%
                                                   filter(hemisphere == 1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -654,7 +662,7 @@ lmebreadth <- function(ds,
                            label_notrop_x = 35,
                            label_notrop_y = 0.9)
   
-  lm_eb_h_s <- my_plotting(ds %>% filter(hemisphere == -1),
+  lm_eb_h_s <- my_plotting(ds %>% filter(!is.na(lat_median_s)),
                            xc = "lat_median_s", 
                            yc = "e_breadth",
                            gfc = "growthform",
@@ -670,13 +678,13 @@ lmebreadth <- function(ds,
                            x_lim = 70,
                            zonec = "zone_s",
                            label_trop = paste("Slope tropical:\n",
-                                              allres_lmeb %>%
+                                              allres_lmeb_2 %>%
                                                 filter(hemisphere == -1) %>%
                                                 filter(growthform == "herb") %>%
                                                 filter(zone == "tropical") %>%
                                                 .$val),
                            label_notrop = paste("Slope else:\n",
-                                                allres_lmeb %>%
+                                                allres_lmeb_2 %>%
                                                   filter(hemisphere == -1) %>%
                                                   filter(growthform == "herb") %>%
                                                   filter(zone == "else") %>%
@@ -719,12 +727,12 @@ lmebreadth <- function(ds,
 }
 
 # tropical = dashed
-figure3 <- lmebreadth(ds = niche_data,
+figure3 <- lmebreadth(ds = hs_sp,
                  #growthform = "herb",
                  plot.type = "p_mean",
                  bin.ning = "eq_points")
 
-ggsave("./../tmp/figure3.jpg",
+ggsave("./../tmp/figure3_v3_HS.jpg",
        width = 4000, height = 2000, units = "px")
 
 

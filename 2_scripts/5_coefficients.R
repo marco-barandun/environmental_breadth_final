@@ -5,22 +5,38 @@ library(sjlabelled)
 
 setwd("/Users/marco/GitHub/environmental_breadth_final/4_plotting")
 
-obs <- read_csv("./../3_generated_data/niche_data_final.csv") %>%
+dt <- read_csv("./../3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4))
 
-obs_n <- obs %>%
+# Create a file with the zones of each species
+#dt <- dt %>%
+#  mutate(zone_n = ifelse(abs(lat_median_n) >= 0, "tropical", NA)) %>%
+#  mutate(zone_n = ifelse(abs(lat_median_n) > 10, "else", zone_n))
+#
+#dt <- dt %>%
+#  mutate(zone_s = ifelse(abs(lat_median_s) >= 0, "tropical", NA)) %>%
+#  mutate(zone_s = ifelse(abs(lat_median_s) > 10, "else", zone_s))
+#
+#dt <- dt %>%
+#  mutate(zone_g = ifelse(abs(lat_median_g) >= 0, "tropical", NA)) %>%
+#  mutate(zone_g = ifelse(abs(lat_median_g) > 10, "else", zone_g))
+#
+#dt %>% select(Species, zone_n, zone_s, zone_g) %>% write_csv("./../3_generated_data/zones_v3.csv")
+
+dt_n <- dt %>%
+  filter(lat_median_n >= 0) %>%
   mutate(zone = ifelse(abs(lat_median_n) >= 0, "tropical", NA)) %>%
   mutate(zone = ifelse(abs(lat_median_n) > 10, "else", zone))
 
-obs_s <- obs %>%
+dt_s <- dt %>%
+  filter(lat_median_s >= 0) %>%
   mutate(zone = ifelse(abs(lat_median_s) >= 0, "tropical", NA)) %>%
   mutate(zone = ifelse(abs(lat_median_s) > 10, "else", zone))
 
-obs_g <- obs %>%
+dt_g <- dt %>%
   mutate(zone = ifelse(abs(lat_median_g) >= 0, "tropical", NA)) %>%
   mutate(zone = ifelse(abs(lat_median_g) > 10, "else", zone))
 
-#obs %>% select(Species, zone_n, zone_s, zone_g) %>% write_csv("./../3_generated_data/zones.csv")
 
 combs <- expand.grid(zone = c("tropical", "else"),
                      hemi = c("North", "South"),
@@ -38,14 +54,14 @@ for(i in 1:nrow(combs)){
   if(combs$hemi[i] == "North"){
     
     # Northern hemisphere
-    tmpdat <- obs_n %>% filter(zone == all_of(combs$zone[i]), 
+    tmpdat <- dt_n %>% filter(zone == all_of(combs$zone[i]), 
                              growthform == all_of(combs$form[i]))
     lrlm <- lm(lat_range_sd_n ~ lat_median_n, na.action = na.omit, tmpdat)
   
     } else {
     
     # Southern hemisphere
-    tmpdat <- obs_s %>% filter(zone == all_of(combs$zone[i]), 
+    tmpdat <- dt_s %>% filter(zone == all_of(combs$zone[i]), 
                                growthform == all_of(combs$form[i]))
     lrlm <- lm(lat_range_sd_s ~ lat_median_s, na.action = na.omit, tmpdat)   
   }
@@ -70,13 +86,13 @@ allres_lmlr %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
 #  if(combs2$hemi[i] == "North"){
 #    
 #    # Northern hemisphere
-#    tmpdat <- obs_n %>% filter(growthform == all_of(combs2$form[i]))
+#    tmpdat <- dt_n %>% filter(growthform == all_of(combs2$form[i]))
 #        eblr <- lm(lat_range_sd_n ~ e_breadth, na.action = na.omit, tmpdat)
 #  
 #        } else {
 #    
 #    # Southern hemisphere
-#    tmpdat <- obs_s %>% filter(growthform == all_of(combs2$form[i]))
+#    tmpdat <- dt_s %>% filter(growthform == all_of(combs2$form[i]))
 #        eblr <- lm(lat_range_sd_s ~ e_breadth, na.action = na.omit, tmpdat)   
 #  }
 #  
@@ -97,14 +113,14 @@ for(i in 1:nrow(combs)){ #combs2
   if(combs$hemi[i] == "North"){
     
     # Northern hemisphere
-    tmpdat <- obs_n %>% filter(zone == all_of(combs$zone[i])) %>%
+    tmpdat <- dt_n %>% filter(zone == all_of(combs$zone[i])) %>%
       filter(growthform == all_of(combs$form[i]))
     eblr <- lm(lat_range_sd_n ~ e_breadth, na.action = na.omit, tmpdat)
     
   } else {
     
     # Southern hemisphere
-    tmpdat <- obs_s %>% filter(zone == all_of(combs$zone[i])) %>%
+    tmpdat <- dt_s %>% filter(zone == all_of(combs$zone[i])) %>%
       filter(growthform == all_of(combs$form[i]))
     eblr <- lm(lat_range_sd_s ~ e_breadth, na.action = na.omit, tmpdat)   
   }
@@ -119,7 +135,7 @@ for(i in 1:nrow(combs)){ #combs2
   allres_eblr <- allres_eblr %>% bind_rows(tmpres)
 }
 
-allres_eblr
+allres_eblr %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
 
 # -----------------------------------------------------------------------------
 # 3 Results for the latitudinal median vs. environmental breadth
@@ -129,14 +145,14 @@ for(i in 1:nrow(combs)){
   if(combs$hemi[i] == "North"){
     
     # Northern hemisphere
-    tmpdat <- obs_n %>% filter(zone == all_of(combs$zone[i]), 
+    tmpdat <- dt_n %>% filter(zone == all_of(combs$zone[i]), 
                                growthform == all_of(combs$form[i]))
     eblm <- lm(e_breadth ~ lat_median_n, na.action = na.omit, tmpdat)
     
     } else {
     
     # Southern hemisphere
-    tmpdat <- obs_s %>% filter(zone == all_of(combs$zone[i]), 
+    tmpdat <- dt_s %>% filter(zone == all_of(combs$zone[i]), 
                                growthform == all_of(combs$form[i]))
     eblm <- lm(e_breadth ~ lat_median_s, na.action = na.omit, tmpdat)   
   }
@@ -154,4 +170,4 @@ for(i in 1:nrow(combs)){
 allres_lmeb %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
 
 
-rm(list=setdiff(ls(), c("allres_lmlr", "allres_eblr", "allres_lmeb", "niche_data")))
+rm(list=setdiff(ls(), c("allres_lmlr", "allres_eblr", "allres_lmeb", "niche_data", "dt")))
