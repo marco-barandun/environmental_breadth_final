@@ -89,56 +89,15 @@ my_plotting <- function(df,
                     fun.min = function(x) mean(x)-sd(x)/sqrt(length(x)), 
                     fun.max = function(x) mean(x)+sd(x)/sqrt(length(x)),
                     color = "azure4") +
-    coord_cartesian(ylim=c(y_lim_s, y_lim_n), xlim = c(0, x_lim)) +
     geom_smooth(
       aes(x = df[[xc]], linetype = df[[zonec]]),
       color = "black",
       method = "lm",
       na.rm = TRUE,
       show.legend = FALSE) +
+    coord_cartesian(ylim=c(y_lim_s, y_lim_n), xlim = c(0, x_lim)) +
     annotate("text", x= label_trop_x, y= label_trop_y, label= label_trop, size=2.5) +
     annotate("text", x= label_notrop_x, y= label_notrop_y, label= label_notrop, size=2.5)
-  
-  return(p)
-}
-
-my_plotting_g <- function(df, 
-                        xc, 
-                        yc,
-                        gfc,
-                        binc,
-                        gf_sel,
-                        ttitle,
-                        xxlab,
-                        yylab,
-                        plot_type,
-                        binning,
-                        y_lim_s,
-                        y_lim_n) {
-  
-  df <- df %>% filter(.data[[gfc]] == gf_sel)
-  mycolors <- c("#00000000", colorRampPalette(c("#FFFFD6FF", "yellow", "orange", "red"), alpha=TRUE)(20))
-  
-  p <- ggplot(data = df, 
-              aes(y = .data[[yc]])) +
-    ggtitle(paste(ttitle, gf_sel)) +
-    xlab(xxlab) +
-    ylab(yylab) +
-    theme(text = element_text(size = 25)) +
-    theme_classic() +
-    scale_fill_manual(values = mycolors) +
-    geom_density_2d_filled(data = df, 
-                           aes(x = .data[[xc]]),
-                           bins = 20, show.legend = FALSE) +
-    stat_summary_bin(data = df, 
-                     aes(x = df[[xc]]),
-                     breaks = quantile(df[[xc]], probs = seq(0, 1, by = 0.05), na.rm = TRUE),
-                     fun = mean, 
-                     fun.min = function(x) mean(x)-sd(x)/sqrt(length(x)), 
-                     fun.max = function(x) mean(x)+sd(x)/sqrt(length(x)),
-                     color = "azure4") +
-    coord_cartesian(ylim=c(y_lim_s, y_lim_n))
-  
   
   return(p)
 }
@@ -221,19 +180,6 @@ rapoport <- function(ds,
                            label_notrop_x = 35,
                            label_notrop_y = 7)
   
-  lm_lr_t_g <- my_plotting_g(ds,
-                           xc = "lat_median_g", 
-                           yc = "lat_range_sd_g",
-                           gfc = "growthform",
-                           binc = "bin",
-                           gf_sel = "tree",
-                           ttitle = "Global",
-                           xxlab = 'Latitudinal median',
-                           yylab = 'Latitudinal range',
-                           plot_type = plot.type,
-                           binning = bin.ning,
-                           y_lim_s = 0,
-                           y_lim_n = 10)
   
   ### Herbs
   
@@ -302,32 +248,15 @@ rapoport <- function(ds,
                            label_notrop_y = 7)
   
   
-  lm_lr_h_g <- my_plotting_g(ds,
-                             xc = "lat_median_g", 
-                             yc = "lat_range_sd_g",
-                             gfc = "growthform",
-                             binc = "bin",
-                             gf_sel = "herb",
-                             ttitle = "Global",
-                             xxlab = 'Latitudinal median',
-                             yylab = 'Latitudinal range',
-                             plot_type = plot.type,
-                             binning = bin.ning,
-                             y_lim_s = 0,
-                             y_lim_n = 10)
-  
-  
   p <- cowplot::plot_grid(lm_lr_t_n,
                           lm_lr_t_s,
-                          lm_lr_t_g,
                           lm_lr_h_n,
                           lm_lr_h_s, 
-                          lm_lr_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
-                          labels = c("A", "B", "C",
-                                     "D", "E", "F"),
+                          rel_widths = c(1, 1,
+                                         1, 1),
+                          ncol = 2, align = "h",
+                          labels = c("A", "B",
+                                     "C", "D"),
                           label_size = 25)
   
   return(p)
@@ -339,7 +268,7 @@ figure1 <- rapoport(ds = hs_sp,
                     bin.ning = "eq_points")
 
 ggsave("./../tmp/figure1_v3_HSsp.jpg",
-       width = 4000, height = 2000, units = "px")
+       width = 3000, height = 2000, units = "px")
 
 # -------------------------------------------------------------------------------------------------------
 # Figure 2: Environmental breadth and latitudinal range
@@ -417,20 +346,6 @@ range <- function(ds,
                            label_notrop_x = 0.5,
                            label_notrop_y = 9)
   
-  eb_lr_t_g <- my_plotting_g(ds,
-                             xc = "e_breadth", 
-                             yc = "lat_range_sd_g",
-                             gfc = "growthform",
-                             binc = "bin",
-                             gf_sel = "tree",
-                             ttitle = "Global",
-                             xxlab = 'Environmental breadth',
-                             yylab = 'Latitudinal range',
-                             plot_type = plot.type,
-                             binning = bin.ning,
-                             y_lim_s = 0,
-                             y_lim_n = 10)
-  
   ### Herbs
   
   eb_lr_h_n <- my_plotting(ds %>% filter(!is.na(lat_median_n)),
@@ -498,30 +413,13 @@ range <- function(ds,
                            label_notrop_y = 9)
   
   
-  eb_lr_h_g <- my_plotting_g(ds,
-                             xc = "e_breadth", 
-                             yc = "lat_range_sd_g",
-                             gfc = "growthform",
-                             binc = "bin",
-                             gf_sel = "herb",
-                             ttitle = "Global",
-                             xxlab = 'Environmental breadth',
-                             yylab = 'Latitudinal range',
-                             plot_type = plot.type,
-                             binning = bin.ning,
-                             y_lim_s = 0,
-                             y_lim_n = 10)
-  
-  
   p <- cowplot::plot_grid(eb_lr_t_n,
                           eb_lr_t_s,
-                          eb_lr_t_g,
                           eb_lr_h_n,
                           eb_lr_h_s, 
-                          eb_lr_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
+                          rel_widths = c(1, 1,
+                                         1, 1),
+                          ncol = 2, align = "h",
                           labels = c("A", "B", "C",
                                      "D", "E", "F"),
                           label_size = 25)
@@ -536,7 +434,7 @@ figure2 <- range(ds = hs_sp,
                     bin.ning = "eq_points")
 
 ggsave("./../tmp/figure2_v3_HS.jpg",
-       width = 4000, height = 2000, units = "px")
+       width = 3000, height = 2000, units = "px")
 
 # -------------------------------------------------------------------------------------------------------
 # Figure 3: Environmental breadth and median latitude
@@ -613,20 +511,7 @@ lmebreadth <- function(ds,
                            label_trop_y = 0.9,
                            label_notrop_x = 35,
                            label_notrop_y = 0.9)
-  
-  lm_eb_t_g <- my_plotting_g(ds,
-                             xc = "lat_median_g", 
-                             yc = "e_breadth",
-                             gfc = "growthform",
-                             binc = "bin",
-                             gf_sel = "tree",
-                             ttitle = "Global",
-                             xxlab = 'Latitudinal median',
-                             yylab = 'Environmental breadth',
-                             plot_type = plot.type,
-                             binning = bin.ning,
-                             y_lim_s = 0,
-                             y_lim_n = 1)
+
   
   ### Herbs
   
@@ -695,32 +580,15 @@ lmebreadth <- function(ds,
                            label_notrop_y = 0.9)
   
   
-  lm_eb_h_g <- my_plotting_g(ds,
-                             xc = "lat_median_g", 
-                             yc = "e_breadth",
-                             gfc = "growthform",
-                             binc = "bin",
-                             gf_sel = "herb",
-                             ttitle = "Global",
-                             xxlab = 'Latitudinal median',
-                             yylab = 'Environmental breadth',
-                             plot_type = plot.type,
-                             binning = bin.ning,
-                             y_lim_s = 0,
-                             y_lim_n = 1)
-  
-  
   p <- cowplot::plot_grid(lm_eb_t_n,
                           lm_eb_t_s,
-                          lm_eb_t_g,
                           lm_eb_h_n,
                           lm_eb_h_s, 
-                          lm_eb_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
-                          labels = c("A", "B", "C",
-                                     "D", "E", "F"),
+                          rel_widths = c(1, 1,
+                                         1, 1),
+                          ncol = 2, align = "h",
+                          labels = c("A", "B",
+                                     "F", "D"),
                           label_size = 25)
   
   return(p)
@@ -733,7 +601,7 @@ figure3 <- lmebreadth(ds = hs_sp,
                  bin.ning = "eq_points")
 
 ggsave("./../tmp/figure3_v3_HS.jpg",
-       width = 4000, height = 2000, units = "px")
+       width = 3000, height = 2000, units = "px")
 
 
 

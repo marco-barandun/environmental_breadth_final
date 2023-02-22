@@ -143,6 +143,54 @@ my_plotting_g <- function(df,
   return(p)
 }
 
+my_plotting_g_2 <- function(df, 
+                          xc, 
+                          yc,
+                          gfc,
+                          binc,
+                          gf_sel,
+                          ttitle,
+                          xxlab,
+                          yylab,
+                          plot_type,
+                          binning,
+                          y_lim_s,
+                          y_lim_n) {
+  
+  df <- df %>% filter(.data[[gfc]] == gf_sel)
+  mycolors <- c("#00000000", colorRampPalette(c("#FFFFD6FF", "yellow", "orange", "red"), alpha=TRUE)(20))
+  
+  p <- ggplot(data = df, 
+              aes(y = .data[[yc]])) +
+    ggtitle(paste(ttitle, gf_sel)) +
+    xlab(xxlab) +
+    ylab(yylab) +
+    theme(text = element_text(size = 25)) +
+    theme_classic() +
+    scale_fill_manual(values = mycolors) +
+    geom_density_2d_filled(data = df, 
+                           aes(x = .data[[xc]]),
+                           bins = 20, show.legend = FALSE) +
+    stat_summary_bin(data = df, 
+                     aes(x = df[[xc]]),
+                     breaks = quantile(df[[xc]], probs = seq(0, 1, by = 0.05), na.rm = TRUE),
+                     fun = mean, 
+                     fun.min = function(x) mean(x)-sd(x)/sqrt(length(x)), 
+                     fun.max = function(x) mean(x)+sd(x)/sqrt(length(x)),
+                     color = "azure4") +
+    geom_smooth(
+      aes(x = df[[xc]]),
+      color = "black",
+      method = "lm",
+      na.rm = TRUE,
+      show.legend = FALSE) +
+    coord_cartesian(ylim=c(y_lim_s, y_lim_n))
+  
+  
+  return(p)
+}
+
+
 # -------------------------------------------------------------------------------------------------------
 ##### Creating plot grid
 
@@ -317,17 +365,17 @@ rapoport <- function(ds,
                              y_lim_n = 10)
   
   
-  p <- cowplot::plot_grid(lm_lr_t_n,
-                          lm_lr_t_s,
-                          lm_lr_t_g,
+  p <- cowplot::plot_grid(lm_lr_t_g,
+                          lm_lr_h_g,
+                          lm_lr_t_n,
                           lm_lr_h_n,
+                          lm_lr_t_s,
                           lm_lr_h_s, 
-                          lm_lr_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
-                          labels = c("A", "B", "C",
-                                     "D", "E", "F"),
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
                           label_size = 25)
   
   return(p)
@@ -417,7 +465,7 @@ range <- function(ds,
                            label_notrop_x = 0.5,
                            label_notrop_y = 9)
   
-  eb_lr_t_g <- my_plotting_g(ds,
+  eb_lr_t_g <- my_plotting_g_2(ds,
                              xc = "e_breadth", 
                              yc = "lat_range_sd_g",
                              gfc = "growthform",
@@ -498,7 +546,7 @@ range <- function(ds,
                            label_notrop_y = 9)
   
   
-  eb_lr_h_g <- my_plotting_g(ds,
+  eb_lr_h_g <- my_plotting_g_2(ds,
                              xc = "e_breadth", 
                              yc = "lat_range_sd_g",
                              gfc = "growthform",
@@ -513,17 +561,17 @@ range <- function(ds,
                              y_lim_n = 10)
   
   
-  p <- cowplot::plot_grid(eb_lr_t_n,
-                          eb_lr_t_s,
-                          eb_lr_t_g,
+  p <- cowplot::plot_grid(eb_lr_t_g,
+                          eb_lr_h_g,
+                          eb_lr_t_n,
                           eb_lr_h_n,
+                          eb_lr_t_s,
                           eb_lr_h_s, 
-                          eb_lr_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
-                          labels = c("A", "B", "C",
-                                     "D", "E", "F"),
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
                           label_size = 25)
   
   return(p)
@@ -535,7 +583,7 @@ figure2 <- range(ds = niche_data,
                     plot.type = "p_mean",
                     bin.ning = "eq_points")
 
-ggsave("./../tmp/figure2_v3.jpg",
+ggsave("./../tmp/figuree2_v3.jpg",
        width = 4000, height = 2000, units = "px")
 
 # -------------------------------------------------------------------------------------------------------
@@ -710,17 +758,17 @@ lmebreadth <- function(ds,
                              y_lim_n = 1)
   
   
-  p <- cowplot::plot_grid(lm_eb_t_n,
-                          lm_eb_t_s,
-                          lm_eb_t_g,
+  p <- cowplot::plot_grid(lm_eb_t_g,
+                          lm_eb_h_g,
+                          lm_eb_t_n,
                           lm_eb_h_n,
+                          lm_eb_t_s,
                           lm_eb_h_s, 
-                          lm_eb_h_g, 
-                          rel_widths = c(1, 1, 1.3,
-                                         1, 1, 1.3),
-                          ncol = 3, align = "h",
-                          labels = c("A", "B", "C",
-                                     "D", "E", "F"),
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
                           label_size = 25)
   
   return(p)
