@@ -3,9 +3,9 @@ library(sjPlot)
 library(sjmisc)
 library(sjlabelled)
 
-setwd("/Users/marco/GitHub/environmental_breadth_final/4_plotting")
+setwd("/Users/marco/GitHub/environmental_breadth_final/")
 
-dt <- read_csv("./../3_generated_data/niche_data_final_summarized_v4.csv") %>%
+dt <- read_csv(".//3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4))
 
 # Create a file with the zones of each species

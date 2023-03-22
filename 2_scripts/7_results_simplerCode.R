@@ -38,9 +38,9 @@ allres_lmlr <- as.data.frame(allres_lmlr)
 
 #niche_data <- obs
 
-niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
+niche_data <- read_csv("./../3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4)); range(niche_data$e_breadth)
-zones <- read_csv("./3_generated_data/zones_v3.csv")
+zones <- read_csv("./../3_generated_data/zones_v3.csv")
 niche_data <- left_join(niche_data, zones, by = "Species"); ds <- niche_data
 
 # -------------------------------------------------------------------------------------------------------

@@ -58,8 +58,8 @@ legend_tree_herbs <- get_legend(
 
 cowplot::plot_grid(nr_lat_median_trees_herbs, legend_tree_herbs, rel_widths = c(3, .4))
 
-ggsave("./../tmp/S1_sp_lat.jpeg",
-       width = 3840*1.5, height = 2160*1.5, units = "px")
+#ggsave("./../tmp/S1_sp_lat.jpeg",
+#       width = 3840*1.5, height = 2160*1.5, units = "px")
 
 ### Figure S2A & B
 (auc_plot <- ggplot(niche_data, aes(auc.val.avg, fill = growthform)) +
