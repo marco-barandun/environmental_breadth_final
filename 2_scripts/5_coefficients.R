@@ -5,7 +5,7 @@ library(sjlabelled)
 
 setwd("/Users/marco/GitHub/environmental_breadth_final/")
 
-dt <- read_csv(".//3_generated_data/niche_data_final_summarized_v4.csv") %>%
+dt <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4))
 
 # Create a file with the zones of each species
@@ -71,12 +71,13 @@ for(i in 1:nrow(combs)){
     zone = combs$zone[i], 
     hemisphere = combs$hemi[i],
     growthform = combs$form[i],
-    val = paste0(round(coef(lrlm)[2], 3), " (", paste(round(confint(lrlm)[2,],3), collapse = ", "), ")"))
+    valci = paste0(round(coef(lrlm)[2], 3), " (", paste(round(confint(lrlm)[2,],3), collapse = ", "), ")"),
+    valse = paste0(round(coef(lrlm)[2], 3), " ± ", round(sqrt(diag(vcov(lrlm)))[2], 3)))
   
   allres_lmlr <- allres_lmlr %>% bind_rows(tmpres)
 }
 
-allres_lmlr %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
+allres_lmlr %>% spread(zone, valse) %>% arrange(model, growthform, hemisphere)
 
 # -----------------------------------------------------------------------------
 # 2 Results for the env.breadth vs. latitudinal range 
@@ -130,12 +131,13 @@ for(i in 1:nrow(combs)){ #combs2
     zone = combs$zone[i],
     hemisphere = combs$hemi[i],
     growthform = combs$form[i],
-    val = paste0(round(coef(eblr)[2], 3), " (", paste(round(confint(eblr)[2,],3), collapse = ", "), ")"))
+    valci = paste0(round(coef(eblr)[2], 3), " (", paste(round(confint(eblr)[2,],3), collapse = ", "), ")"),
+    valse = paste0(round(coef(eblr)[2], 3), " ± ", round(sqrt(diag(vcov(eblr)))[2], 3)))
   
   allres_eblr <- allres_eblr %>% bind_rows(tmpres)
 }
 
-allres_eblr %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
+allres_eblr %>% spread(zone, valse) %>% arrange(model, growthform, hemisphere)
 
 # -----------------------------------------------------------------------------
 # 3 Results for the latitudinal median vs. environmental breadth
@@ -162,12 +164,13 @@ for(i in 1:nrow(combs)){
     zone = combs$zone[i], 
     hemisphere = combs$hemi[i],
     growthform = combs$form[i],
-    val = paste0(round(coef(eblm)[2], 3), " (", paste(round(confint(eblm)[2,],3), collapse = ", "), ")"))
+    valci = paste0(round(coef(eblm)[2], 3), " (", paste(round(confint(eblm)[2,],3), collapse = ", "), ")"),
+    valse = paste0(round(coef(eblm)[2], 3), " ± ", round(sqrt(diag(vcov(eblm)))[2], 3)))
   
   allres_lmeb <- allres_lmeb %>% bind_rows(tmpres)
 }
 
-allres_lmeb %>% spread(zone, val) %>% arrange(model, growthform, hemisphere)
+allres_lmeb %>% spread(zone, valse) %>% arrange(model, growthform, hemisphere)
 
 
 rm(list=setdiff(ls(), c("allres_lmlr", "allres_eblr", "allres_lmeb", "niche_data", "dt")))
