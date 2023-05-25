@@ -1,0 +1,82 @@
+library(tidyverse)
+
+setwd("/Users/marco/GitHub/environmental_breadth_final/")
+
+#species@models[[8]]$betas
+
+models_path <- "/Volumes/1TB_SSD/full_rerun_trees_euler/res_saved_models/"
+
+# Getting the list of species
+modelled_species <- list.files(path = models_path) %>%
+  sub("_models.rds", "", .)
+
+all_used_variables <- data.frame()
+
+for (species in modelled_species) {
+  
+  sp_model <- readRDS(paste0(models_path, species, "_models.rds"))
+  
+  # Selecting best model
+  results_ordered <- sp_model@results[order(sp_model@results$or.mtp.avg, -sp_model@results$auc.val.avg),]
+  best_modelOR <- as.integer(rownames(results_ordered[1,]))
+  m <- sp_model@models[[best_modelOR]]
+  
+  # Extracting the used variables and appending them to the dataframe with the species information
+  all_used_variables <- t(as.data.frame(m$betas)) %>%
+    as.data.frame(.) %>%
+    mutate(species = species) %>%
+    bind_rows(all_used_variables, .)
+
+}
+
+# Setting the used variables to 1 and the non-used ones to 0
+ds <- all_used_variables %>%
+  mutate(across(where(is.numeric), ~ ifelse(is.na(.), 0, 1))) %>%
+  rownames_to_column() %>%
+  select(-rowname) %>%
+  select(sort(names(.)[!startsWith(names(.), "I(")]), sort(names(.)[startsWith(names(.), "I(")])) %>%
+  select(species, everything())
+
+write_csv(all_used_variables %>% mutate(growthform = "tree"), "./3_generated_data/used_variables_bin_trees.csv")
+
+sum_table <- data.frame(Column = colnames(ds %>% select(-species)), Sum = colSums(ds %>% select(-species), na.rm = TRUE)) %>%
+  arrange(-Sum)
+print(sum_table)
+
+data <- sum_table
+
+# Create a new column to group the rows
+data$Group <- ifelse(grepl("SG", data$Column), "SG", "CHELSA")
+
+# Reorder the rows within each group based on the presence of "I("
+data$Column <- reorder(data$Column, grepl("I\\(", data$Column))
+
+margin_spacer <- function(x) {
+  # where x is the column in your dataset
+  left_length <- nchar(levels(factor(x)))[1]
+  if (left_length > 8) {
+    return((left_length - 8) * 4)
+  }
+  else
+    return(0)
+}
+
+# Create the bar plot
+ggplot(data, aes(x = Column, y = Sum, fill = Group)) +
+  geom_bar(stat = "identity", color = "black") +
+  scale_fill_manual(values = c("SG" = "#FF7F50", "CHELSA" = "#6495ED")) +
+  labs(x = "Predictor layer", y = "Times used", caption = "Growthform = tree") +
+  geom_vline(xintercept = sum(grepl("I\\(", data$Column)) + 0.5, linetype = "dashed") +
+  annotate("text", x = 12, y = max(data$Sum), label = "Linear", hjust = 0, vjust = 1, size = 6) +
+  annotate("text", x = 36, y = max(data$Sum), label = "Quadratic", hjust = 1, vjust = 1, size = 6) +
+  theme_classic() +
+  coord_cartesian(ylim = c(0, max(data$Sum) * 1.1), expand = FALSE) + # Adjust the y-axis limits and expansion
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title = element_text(size = 16),  # Adjust the overall font size
+        axis.text = element_text(size = 12),  # Adjust the overall font size
+        plot.margin = margin(l = 0 + margin_spacer(data$Column))
+        ) 
+
+ggsave("./tmp/used_variables_trees.jpg",
+       width = 3840, height = 2160, units = "px")
+  

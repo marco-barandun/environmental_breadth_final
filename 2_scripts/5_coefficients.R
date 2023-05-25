@@ -5,8 +5,19 @@ library(sjlabelled)
 
 setwd("/Users/marco/GitHub/environmental_breadth_final/")
 
+source("./2_scripts/5_coefficients.R")
+
 dt <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4))
+
+
+# Calculate the ECDF of the vector x
+ecdf_x <- ecdf(dt$lat_range_sd_g)
+
+# Find the quantile of a value of 2.5
+ecdf_x(5)
+
+
 
 # Create a file with the zones of each species
 #dt <- dt %>%

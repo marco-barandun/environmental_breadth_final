@@ -277,5 +277,5 @@ F4 <- cowplot::plot_grid(F4A,
                                     "B", "D", "F"),
                          label_size = 20)
 
-ggsave("./tmp/new_figure_1.jpg",
+ggsave("./tmp/new_figure_4.jpg",
        width = 4000, height = 2000, units = "px")
