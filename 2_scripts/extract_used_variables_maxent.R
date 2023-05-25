@@ -43,13 +43,11 @@ sum_table <- data.frame(Column = colnames(ds %>% select(-species)), Sum = colSum
   arrange(-Sum)
 print(sum_table)
 
-data <- sum_table
-
 # Create a new column to group the rows
-data$Group <- ifelse(grepl("SG", data$Column), "SG", "CHELSA")
+sum_table$Group <- ifelse(grepl("SG", sum_table$Column), "SG", "CHELSA")
 
 # Reorder the rows within each group based on the presence of "I("
-data$Column <- reorder(data$Column, grepl("I\\(", data$Column))
+sum_table$Column <- reorder(sum_table$Column, grepl("I\\(", sum_table$Column))
 
 margin_spacer <- function(x) {
   # where x is the column in your dataset
@@ -62,7 +60,7 @@ margin_spacer <- function(x) {
 }
 
 # Create the bar plot
-ggplot(data, aes(x = Column, y = Sum, fill = Group)) +
+ggplot(sum_table, aes(x = Column, y = Sum, fill = Group)) +
   geom_bar(stat = "identity", color = "black") +
   scale_fill_manual(values = c("SG" = "#FF7F50", "CHELSA" = "#6495ED")) +
   labs(x = "Predictor layer", y = "Times used", caption = "Growthform = tree") +
