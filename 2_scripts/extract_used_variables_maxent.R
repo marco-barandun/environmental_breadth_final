@@ -4,7 +4,7 @@ setwd("/Users/marco/GitHub/environmental_breadth_final/")
 
 #species@models[[8]]$betas
 
-models_path <- "/Volumes/1TB_SSD/full_rerun_trees_euler/res_saved_models/"
+models_path <- "./forAndrea_a-few-models-to-try/"
 
 # Getting the list of species
 modelled_species <- list.files(path = models_path) %>%
