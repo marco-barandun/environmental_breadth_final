@@ -3,21 +3,8 @@ library(sjPlot)
 library(sjmisc)
 library(sjlabelled)
 
-setwd("/Users/marco/GitHub/environmental_breadth_final/")
-
-source("./2_scripts/5_coefficients.R")
-
 dt <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4))
-
-
-# Calculate the ECDF of the vector x
-ecdf_x <- ecdf(dt$lat_range_sd_g)
-
-# Find the quantile of a value of 2.5
-ecdf_x(5)
-
-
 
 # Create a file with the zones of each species
 #dt <- dt %>%
@@ -92,32 +79,6 @@ allres_lmlr %>% spread(zone, valse) %>% arrange(model, growthform, hemisphere)
 
 # -----------------------------------------------------------------------------
 # 2 Results for the env.breadth vs. latitudinal range 
-#allres_eblr <- tibble()  
-#for(i in 1:nrow(combs2)){
-#
-#  if(combs2$hemi[i] == "North"){
-#    
-#    # Northern hemisphere
-#    tmpdat <- dt_n %>% filter(growthform == all_of(combs2$form[i]))
-#        eblr <- lm(lat_range_sd_n ~ e_breadth, na.action = na.omit, tmpdat)
-#  
-#        } else {
-#    
-#    # Southern hemisphere
-#    tmpdat <- dt_s %>% filter(growthform == all_of(combs2$form[i]))
-#        eblr <- lm(lat_range_sd_s ~ e_breadth, na.action = na.omit, tmpdat)   
-#  }
-#  
-#  tmpres <- tibble(
-#    model = "env.breadth vs lat range", 
-#    hemisphere = combs2$hemi[i],
-#    growthform = combs2$form[i],
-#    val = paste0(round(coef(eblr)[2], 3), " (", paste(round(confint(eblr)[2,],3), collapse = ", "), ")"))
-#  
-#  allres_eblr <- allres_eblr %>% bind_rows(tmpres)
-#}
-#
-#allres_eblr
 
 allres_eblr <- tibble()  
 for(i in 1:nrow(combs)){ #combs2

@@ -32,8 +32,8 @@ run_mess <- function(species_list, envs_var) {
     
     #print(paste("Computing the mess values took:", difftime(end, start, units='mins'), "minutes"))
     
-    value_N <- cellStats(ms_N, function(i, ...) sum(na.omit(i) >= 0))/cellStats(ms_N, function(i, ...) length(na.omit(i)))
-    value_S <- cellStats(ms_S, function(i, ...) sum(na.omit(i) >= 0))/cellStats(ms_S, function(i, ...) length(na.omit(i)))
+    mess_n <- cellStats(ms_N, function(i, ...) sum(na.omit(i) >= 0))/cellStats(ms_N, function(i, ...) length(na.omit(i)))
+    mess_s <- cellStats(ms_S, function(i, ...) sum(na.omit(i) >= 0))/cellStats(ms_S, function(i, ...) length(na.omit(i)))
     
     write_csv(data.frame(species, value_N, value_S), paste("./../3_generated_data/res_MESS_perHemisphere/", species, "_MESS_perHemisphere.csv", sep = ""))
     
