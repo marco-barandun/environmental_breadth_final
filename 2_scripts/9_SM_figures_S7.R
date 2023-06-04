@@ -16,6 +16,10 @@ allres_eblr <- as.data.frame(allres_eblr)
 allres_lmeb <- as.data.frame(allres_lmeb)
 allres_eblr <- as.data.frame(allres_eblr)
 
+# Set global text size options
+element_text_size <- 17
+annotate_text_size <- 5
+
 # ------ Import and filter data --------------------------------------------------------------------------
 
 niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
@@ -53,14 +57,14 @@ S7A <- ggplot(data = S7A_data,
   ggtitle("Northern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
                            filter(growthform == "tree") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -69,8 +73,8 @@ S7A <- ggplot(data = S7A_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
   scale_fill_manual(values = mycolors) +
+  theme(text = element_text(size = element_text_size)) +
   coord_cartesian(ylim = c(0, 1), xlim = c(0, 70))
 
 # ------ Figure S7B: Latitudinal gradient environmental breadth - Northern hemisphere, herb -------------
@@ -97,14 +101,14 @@ S7B <- ggplot(data = S7B_data,
   ggtitle("Northern hemisphere, herb") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
                            filter(growthform == "herb") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -113,8 +117,8 @@ S7B <- ggplot(data = S7B_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
   scale_fill_manual(values = mycolors) +
+  theme(text = element_text(size = element_text_size)) +
   coord_cartesian(ylim = c(0, 1), xlim = c(0, 70))
 
 # ------ Figure S7C: Latitudinal gradient environmental breadth - Southern hemisphere, tree -------------
@@ -141,14 +145,14 @@ S7C <- ggplot(data = S7C_data,
   ggtitle("Southern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
                            filter(growthform == "tree") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -157,8 +161,8 @@ S7C <- ggplot(data = S7C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
   scale_fill_manual(values = mycolors) +
+  theme(text = element_text(size = element_text_size)) +
   coord_cartesian(ylim = c(0, 1), xlim = c(0, 70))
 
 # ------ Figure S7D: Latitudinal gradient environmental breadth - Southern hemisphere, herb -------------
@@ -185,14 +189,14 @@ S7D <- ggplot(data = S7D_data,
   ggtitle("Southern hemisphere, herb") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
                            filter(growthform == "herb") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -201,13 +205,13 @@ S7D <- ggplot(data = S7D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
   scale_fill_manual(values = mycolors) +
+  theme(text = element_text(size = element_text_size)) +
   coord_cartesian(ylim = c(0, 1), xlim = c(0, 70))
 
 # ------ Joining and saving the plots -------------------------------------------------------------
 
-S7 <- cowplot::plot_grid(S7A,
+(S7 <- cowplot::plot_grid(S7A,
                          S7B,
                          S7C,
                          S7D,
@@ -217,6 +221,7 @@ S7 <- cowplot::plot_grid(S7A,
                          labels = c("A", "C",
                                     "B", "D"),
                          label_size = 20)
+)
 
 #ggsave("./tmp/figure_S7.jpg",
 #       width = 4000, height = 3000, units = "px")

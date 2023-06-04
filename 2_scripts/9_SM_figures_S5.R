@@ -17,6 +17,10 @@ allres_lmeb <- as.data.frame(allres_lmeb)
 allres_lmeb <- as.data.frame(allres_lmeb)
 allres_lmeb <- as.data.frame(allres_lmeb)
 
+# Set global text size options
+element_text_size <- 17
+annotate_text_size <- 5
+
 # ------ Import and filter data --------------------------------------------------------------------------
 
 niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
@@ -52,14 +56,14 @@ S5A <- ggplot(data = S5A_data,
   ggtitle("Northern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
                            filter(growthform == "tree") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -68,7 +72,7 @@ S5A <- ggplot(data = S5A_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -96,14 +100,14 @@ S5B <- ggplot(data = S5B_data,
   ggtitle("Northern hemisphere, herb") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
                            filter(growthform == "herb") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -112,7 +116,7 @@ S5B <- ggplot(data = S5B_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -140,14 +144,14 @@ S5C <- ggplot(data = S5C_data,
   ggtitle("Southern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
                            filter(growthform == "tree") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -156,7 +160,7 @@ S5C <- ggplot(data = S5C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -184,14 +188,14 @@ S5D <- ggplot(data = S5D_data,
   ggtitle("Southern hemisphere, herb") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
                            filter(growthform == "herb") %>%
                            filter(zone == "tropical") %>%
                            .$valse)) +
-  annotate("text", x = 45, y = 0.75, size = 5, 
+  annotate("text", x = 45, y = 0.75, size = annotate_text_size, 
            label = paste("β (else) =\n",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -200,13 +204,13 @@ S5D <- ggplot(data = S5D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
 # ------ Joining and saving the plots -------------------------------------------------------------
 
-S5 <- cowplot::plot_grid(S5A,
+(S5 <- cowplot::plot_grid(S5A,
                          S5B,
                          S5C,
                          S5D,
@@ -216,7 +220,7 @@ S5 <- cowplot::plot_grid(S5A,
                          labels = c("A", "C",
                                     "B", "D"),
                          label_size = 20)
-
+)
 #ggsave("./tmp/figure_S5.jpg",
 #       width = 4000, height = 3000, units = "px")
  
