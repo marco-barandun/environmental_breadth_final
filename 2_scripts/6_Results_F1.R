@@ -6,7 +6,8 @@ setwd("/Users/marco/GitHub/environmental_breadth_final/")
 element_text_size <- 17
 
 niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
-  mutate(e_breadth = (env_breadth*mess)^(1/4))
+  mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
+  mutate(growthform = ifelse(growthform == "herb", "non-tree", growthform))
 
 A <- ggplot(data = niche_data, aes(x = n_inc_obs, group = growthform, fill = growthform)) +
   geom_density(stat = "count", show.legend = FALSE) +
@@ -49,6 +50,6 @@ C <- ggplot(data = niche_data, aes(x = lat_range_sd_g, group = growthform, fill 
                    labels = c("A", "B", "C"),
                    label_size = 25))
 
-#ggsave("./tmp/new_figure_1.jpg",
+#ggsave("./tmp/final/figure_1.jpg",
 #       width = 4000, height = 1500, units = "px")
 

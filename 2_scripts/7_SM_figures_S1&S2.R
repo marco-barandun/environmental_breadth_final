@@ -7,7 +7,8 @@ element_text_size <- 25
 
 # ------ Import data --------------------------------------------------------------------------
 niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
-  mutate(e_breadth = (env_breadth*mess)^(1/4))
+  mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
+  mutate(growthform = ifelse(growthform == "herb", "non-tree", growthform))
 
 # Reading in the list of all non-tree species used
 herbs <- read_csv("./3_generated_data/ALLherbs_medianLat.csv") %>% mutate(growthform = "herb")
@@ -38,6 +39,13 @@ all_species <- species_included%>%
 
 # ------ Figure S1 A and B -------------
 
+get_legend <- function(plot) {
+  tmp <- ggplot_gtable(ggplot_build(plot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  legend
+}
+
 nr_lat_median_trees <- ggplot(all_species %>% filter(growthform == "tree"), aes(lat_median, fill = inc)) +
   geom_histogram() +
   scale_fill_manual(values=c("grey60", "grey10")) +
@@ -66,27 +74,26 @@ nr_lat_median_trees_herbs <- cowplot::plot_grid(nr_lat_median_trees,
 
 legend_tree_herbs <- get_legend(
   # create some space to the left of the legend
-  nr_lat_median_herbs + theme(legend.box.margin = margin(0, 0, 0, 12)))
+  nr_lat_median_herbs + theme(legend.box.margin = margin(0, 0, 0, 0)))
 
 (cowplot::plot_grid(nr_lat_median_trees_herbs, legend_tree_herbs, rel_widths = c(3, .4)))
 
-#ggsave("./tmp/figure_S1.jpg",
-#       width = 3840*1.5, height = 2160*1.5, units = "px")
+#ggsave("./tmp/final/figure_S1.jpg",
+#       width = 3840, height = 2160, units = "px")
 
 
 # ------ Figure S2 A and B -------------
 
 ### Figure S2A & B
 (auc_plot <- ggplot(niche_data, aes(auc.val.avg, fill = growthform)) +
-    geom_histogram() +
-    xlab('Average AUC value') +
-    ylab('Number of included species') +
-    theme_classic() +
-    theme(text = element_text(size = element_text_size),
-          legend.position="none") +
-    scale_fill_grey(start = 0.35, 
-                    end = .9,
-                    name = "Growthform")
+   geom_histogram() +
+   xlab('Average AUC value') +
+   ylab('Number of included species') +
+   theme_classic() +
+   theme(text = element_text(size = element_text_size),
+         legend.text = element_text(size = element_text_size),  # Set legend text size
+         legend.position = "none") +
+   scale_fill_grey(start = 0.35, end = .9, name = "Growthform")
 )
 
 (or_plot <- ggplot(niche_data, aes(or.10p.avg, fill = growthform)) +
@@ -94,22 +101,26 @@ legend_tree_herbs <- get_legend(
     xlab('Average 10% omission rate') +
     ylab('Number of included species') +
     theme_classic() +
-    theme(text = element_text(size = element_text_size)) +
-    scale_fill_grey(start = 0.35, 
-                    end = .9,
-                    name = "Growthform")
+    theme(text = element_text(size = element_text_size),
+          legend.text = element_text(size = element_text_size),  # Set legend text size
+          legend.position = "none") +
+    scale_fill_grey(start = 0.35, end = .9, name = "Growthform")
 )
 
-auc_or_plots <- cowplot::plot_grid(auc_plot, 
-                                   or_plot + theme(legend.position="none"),
-                                   labels = c('A', 'B'), label_size = element_text_size)
+auc_or_plots <- cowplot::plot_grid(auc_plot, or_plot, labels = c('A', 'B'), label_size = element_text_size)
 
 legend_auc_or <- get_legend(
-  # create some space to the left of the legend
-  or_plot + theme(legend.box.margin = margin(0, 0, 0, 12)))
+  auc_plot + theme(legend.position = "right", legend.box.margin = margin(0, 0, 0, 0),
+                   legend.text = element_text(size = element_text_size))  # Set legend text size
+)
 
-(cowplot::plot_grid(auc_or_plots, legend_auc_or, rel_widths = c(3, .4)))
+# Adjust the left margin of the plot to accommodate the legend title
+(plot_with_legend <- cowplot::plot_grid(
+    auc_or_plots,
+    legend_auc_or,
+    rel_widths = c(3, 0.5))
+)
 
-#ggsave("./../tmp/S1_AUC_OR.jpeg",
-#       width = 3840*1.5, height = 2160*1.5, units = "px")
-
+#ggsave("./tmp/final/figure_S2.jpeg",
+#       width = 3840, height = 2160, units = "px")
+ 

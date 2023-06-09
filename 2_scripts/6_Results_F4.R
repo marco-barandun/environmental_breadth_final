@@ -18,6 +18,7 @@ allres_lmlr <- as.data.frame(allres_lmlr)
 
 # Set global text size options
 element_text_size <- 17
+element_title_size <- 14.5
 annotate_text_size <- 5
 
 # ------ Import and filter data --------------------------------------------------------------------------
@@ -50,7 +51,8 @@ F4A <- ggplot(data = F4A_data,
   ylab("Environmental breath") +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 0.8))
 
@@ -69,12 +71,13 @@ F4B <- ggplot(data = F4B_data,
                    fun.max = function(x) mean(x)+sd(x)/sqrt(length(x)),
                    color = "azure4") +
   
-  ggtitle("Global, herb") +
+  ggtitle("Global, non-tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 0.8))
 
@@ -102,7 +105,7 @@ F4C <- ggplot(data = F4C_data,
   ggtitle("Northern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 12, y = 0.75, size = 5, 
            label = paste("β =",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -118,7 +121,8 @@ F4C <- ggplot(data = F4C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -143,10 +147,10 @@ F4D <- ggplot(data = F4D_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Northern hemisphere, herb") +
+  ggtitle("Northern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 12, y = 0.75, size = 5, 
            label = paste("β =",
                          allres_lmeb %>%
                            filter(hemisphere == "North") %>%
@@ -162,7 +166,8 @@ F4D <- ggplot(data = F4D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -190,7 +195,7 @@ F4E <- ggplot(data = F4E_data,
   ggtitle("Southern hemisphere, tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 12, y = 0.75, size = 5, 
            label = paste("β =",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -206,7 +211,8 @@ F4E <- ggplot(data = F4E_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),        
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -231,10 +237,10 @@ F4F <- ggplot(data = F4F_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Southern hemisphere, herb") +
+  ggtitle("Southern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
-  annotate("text", x = 10, y = 0.75, size = 5, 
+  annotate("text", x = 12, y = 0.75, size = 5, 
            label = paste("β =",
                          allres_lmeb %>%
                            filter(hemisphere == "South") %>%
@@ -250,7 +256,8 @@ F4F <- ggplot(data = F4F_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = 17)) +
+  theme(text = element_text(size = element_text_size),
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
@@ -269,5 +276,5 @@ F4F <- ggplot(data = F4F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-#ggsave("./tmp/figure_4.jpg",
-#       width = 4000, height = 2000, units = "px")
+ggsave("./tmp/final/figure_4.jpg",
+       width = 4000, height = 2000, units = "px")

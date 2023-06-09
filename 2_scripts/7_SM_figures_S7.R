@@ -98,7 +98,7 @@ S7B <- ggplot(data = S7B_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Northern hemisphere, herb") +
+  ggtitle("Northern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
   annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
@@ -186,7 +186,7 @@ S7D <- ggplot(data = S7D_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Southern hemisphere, herb") +
+  ggtitle("Southern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Environmental breadth") +
   annotate("text", x = 10, y = 0.75, size = annotate_text_size, 
@@ -223,6 +223,6 @@ S7D <- ggplot(data = S7D_data,
                          label_size = 20)
 )
 
-#ggsave("./tmp/figure_S7.jpg",
+#ggsave("./tmp/final/figure_S7.jpg",
 #       width = 4000, height = 3000, units = "px")
  

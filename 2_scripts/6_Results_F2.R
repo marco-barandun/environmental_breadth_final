@@ -18,6 +18,7 @@ allres_lmlr <- as.data.frame(allres_lmlr)
 
 # Set global text size options
 element_text_size <- 17
+element_title_size <- 15
 annotate_text_size <- 5
 
 # ------ Import and filter data --------------------------------------------------------------------------
@@ -51,11 +52,11 @@ F2A <- ggplot(data = F2A_data,
   ylab("Latitudinal range (SD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 10))
 
-# ------ Figure 2B: The latitudinal gradient of latitudinal range - Global, herb -------------
+# ------ Figure 2B: The latitudinal gradient of latitudinal range - Global, non-tree -------------
 
 F2B_data <- niche_data %>% filter(growthform == "herb"); range(F2B_data$lat_range_sd_g)
 F2B_breaks <- quantile(F2B_data[["lat_median_g"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
@@ -70,12 +71,12 @@ F2B <- ggplot(data = F2B_data,
                    fun.max = function(x) mean(x)+sd(x)/sqrt(length(x)),
                    color = "azure4") +
   
-  ggtitle("Global, herb") +
+  ggtitle("Global, non-tree") +
   xlab("Latitudinal median") +
   ylab("Latitudinal range (SD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 10))
 
@@ -119,11 +120,11 @@ F2C <- ggplot(data = F2C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
-# ------ Figure 2D: The latitudinal gradient of latitudinal range - Northern hemisphere, herb -------------
+# ------ Figure 2D: The latitudinal gradient of latitudinal range - Northern hemisphere, non-tree -------------
 
 F2D_data <- niche_data %>% filter(growthform == "herb"); range(F2D_data$lat_range_sd_n)
 F2D_breaks <- quantile(F2D_data[["lat_median_n"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
@@ -144,7 +145,7 @@ F2D <- ggplot(data = F2D_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Northern hemisphere, herb") +
+  ggtitle("Northern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Latitudinal range (SD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
@@ -163,7 +164,7 @@ F2D <- ggplot(data = F2D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
@@ -207,11 +208,11 @@ F2E <- ggplot(data = F2E_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
-# ------ Figure 2F: The latitudinal gradient of latitudinal range - Southern hemisphere, herb -------------
+# ------ Figure 2F: The latitudinal gradient of latitudinal range - Southern hemisphere, non-tree -------------
 
 F2F_data <- niche_data %>% filter(growthform == "herb"); range(F2F_data$lat_range_sd_s)
 F2F_breaks <- quantile(F2F_data[["lat_median_s"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
@@ -232,7 +233,7 @@ F2F <- ggplot(data = F2F_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Southern hemisphere, herb") +
+  ggtitle("Southern hemisphere, non-tree") +
   xlab("Latitudinal median") +
   ylab("Latitudinal range (SD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
@@ -251,7 +252,8 @@ F2F <- ggplot(data = F2F_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),
+        title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
@@ -270,6 +272,7 @@ F2F <- ggplot(data = F2F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-#ggsave("./tmp/new_figure_3.jpg",
-#       width = 4000, height = 2000, units = "px")
+ggsave("./tmp/final/figure_2.jpg",
+       width = 4000, height = 2000, units = "px")
+
 

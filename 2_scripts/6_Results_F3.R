@@ -18,6 +18,7 @@ allres_lmlr <- as.data.frame(allres_lmlr)
 
 # Set global text size options
 element_text_size <- 17
+element_title_size <- 15
 annotate_text_size <- 5
 
 # ------ Import and filter data --------------------------------------------------------------------------
@@ -55,7 +56,7 @@ F3A <- ggplot(data = F3A_data,
   ylab("Latitudinal range (SD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 10))
 
@@ -78,12 +79,12 @@ F3B <- ggplot(data = F3B_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Global, herb") +
+  ggtitle("Global, non-tree") +
   xlab("Environmental breadth") +
   ylab("Latitudinal range (SD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 10))
 
@@ -127,7 +128,7 @@ F3C <- ggplot(data = F3C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
@@ -152,7 +153,7 @@ F3D <- ggplot(data = F3D_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Northern hemisphere, herb") +
+  ggtitle("Northern hemisphere, non-tree") +
   xlab("Environmental breadth") +
   ylab("Latitudinal range (SD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
@@ -171,7 +172,7 @@ F3D <- ggplot(data = F3D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
@@ -215,7 +216,7 @@ F3E <- ggplot(data = F3E_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
@@ -240,7 +241,7 @@ F3F <- ggplot(data = F3F_data,
     na.rm = TRUE,
     show.legend = FALSE) +
   
-  ggtitle("Southern hemisphere, herb") +
+  ggtitle("Southern hemisphere, non-tree") +
   xlab("Environmental breadth") +
   ylab("Latitudinal range (SD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
@@ -259,7 +260,8 @@ F3F <- ggplot(data = F3F_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size)) +
+  theme(text = element_text(size = element_text_size),
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
@@ -278,5 +280,5 @@ F3F <- ggplot(data = F3F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-#ggsave("./tmp/figure_3.jpg",
-#       width = 4000, height = 2000, units = "px")
+ggsave("./tmp/final/figure_3.jpg",
+       width = 4000, height = 2000, units = "px")
