@@ -3,7 +3,7 @@ library(sjPlot)
 library(sjmisc)
 library(sjlabelled)
 
-dt <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
+dt <- read_csv("./3_generated_data/niche_data_final_summarized_v5_withMAD.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
   filter(is.na(lat_median_n) | is.na(lat_median_s))
 
@@ -40,14 +40,14 @@ for(i in 1:nrow(combs)){
     # Northern hemisphere
     tmpdat <- dt_n %>% filter(zone == all_of(combs$zone[i]), 
                               growthform == all_of(combs$form[i]))
-    lrlm <- lm(lat_range_sd_n ~ lat_median_n, na.action = na.omit, tmpdat)
+    lrlm <- lm(lat_range_mad_n ~ lat_median_n, na.action = na.omit, tmpdat)
     
   } else {
     
     # Southern hemisphere
     tmpdat <- dt_s %>% filter(zone == all_of(combs$zone[i]), 
                               growthform == all_of(combs$form[i]))
-    lrlm <- lm(lat_range_sd_s ~ lat_median_s, na.action = na.omit, tmpdat)   
+    lrlm <- lm(lat_range_mad_s ~ lat_median_s, na.action = na.omit, tmpdat)   
   }
   
   tmpres <- tibble(
@@ -74,14 +74,14 @@ for(i in 1:nrow(combs)){ #combs2
     # Northern hemisphere
     tmpdat <- dt_n %>% filter(zone == all_of(combs$zone[i])) %>%
       filter(growthform == all_of(combs$form[i]))
-    eblr <- lm(lat_range_sd_n ~ e_breadth, na.action = na.omit, tmpdat)
+    eblr <- lm(lat_range_mad_n ~ e_breadth, na.action = na.omit, tmpdat)
     
   } else {
     
     # Southern hemisphere
     tmpdat <- dt_s %>% filter(zone == all_of(combs$zone[i])) %>%
       filter(growthform == all_of(combs$form[i]))
-    eblr <- lm(lat_range_sd_s ~ e_breadth, na.action = na.omit, tmpdat)   
+    eblr <- lm(lat_range_mad_s ~ e_breadth, na.action = na.omit, tmpdat)   
   }
   
   tmpres <- tibble(

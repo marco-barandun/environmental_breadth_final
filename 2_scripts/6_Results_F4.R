@@ -23,7 +23,7 @@ annotate_text_size <- 5
 
 # ------ Import and filter data --------------------------------------------------------------------------
 
-niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
+niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v5_withMAD_min5.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
   left_join(read_csv("./3_generated_data/zones_v3.csv"), by = "Species")
 
@@ -56,6 +56,19 @@ F4A <- ggplot(data = F4A_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 0.8))
 
+F4A_raw <- ggplot(data = F4A_data,
+                  aes(x = lat_median_g, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
+
 # ------ Figure 4B: Latitudinal gradients of environmental breadth - Global, herb -------------
 
 F4B_data <- niche_data %>% filter(growthform == "herb")
@@ -80,6 +93,20 @@ F4B <- ggplot(data = F4B_data,
         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim=c(0, 0.8))
+
+
+F4B_raw <- ggplot(data = F4B_data,
+                  aes(x = lat_median_g, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
 
 # ------ Figure 4C: Latitudinal gradients of environmental breadth - Northern hemisphere, tree -------------
 
@@ -126,6 +153,19 @@ F4C <- ggplot(data = F4C_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
+F4C_raw <- ggplot(data = F4C_data,
+                  aes(x = lat_median_n, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Northern hemisphere, tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
+
 # ------ Figure 4D: Latitudinal gradients of environmental breadth - Northern hemisphere, herb -------------
 
 F4D_data <- niche_data %>% filter(growthform == "herb")
@@ -170,6 +210,19 @@ F4D <- ggplot(data = F4D_data,
         title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
+
+F4D_raw <- ggplot(data = F4D_data,
+                  aes(x = lat_median_n, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Northern hemisphere, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
 
 # ------ Figure 4E: Latitudinal gradients of environmental breadth - Southern hemisphere, tree -------------
 
@@ -216,6 +269,19 @@ F4E <- ggplot(data = F4E_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
+F4E_raw <- ggplot(data = F4E_data,
+                  aes(x = lat_median_s, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Southern hemisphere, tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
+
 # ------ Figure 4F: Latitudinal gradients of environmental breadth - Southern hemisphere, herb -------------
 
 F4F_data <- niche_data %>% filter(growthform == "herb"); range(F4F_data$lat_range_sd_s)
@@ -261,6 +327,19 @@ F4F <- ggplot(data = F4F_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 0.8), xlim = c(0, 70))
 
+F4F_raw <- ggplot(data = F4F_data,
+                  aes(x = lat_median_s, y = e_breadth)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Southern hemisphere, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Environmenrtal breadth") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(ylim = c(0, 1), xlim = c(0, 80))
+
 # ------ Joining and saving the plots -------------------------------------------------------------
 
 (F4 <- cowplot::plot_grid(F4A,
@@ -276,5 +355,36 @@ F4F <- ggplot(data = F4F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-ggsave("./tmp/final/figure_4.jpg",
+ggsave("./figures/figure_4.jpg",
+       width = 4000, height = 2000, units = "px")
+
+(F4_poster <- cowplot::plot_grid(
+                          F4C,
+                          F4D,
+                          F4E,
+                          F4F,
+                          rel_widths = c(1, 1,
+                                         1, 1),
+                          ncol = 2, byrow = FALSE,
+                          labels = "AUTO",
+                          label_size = 20)
+)
+ggsave("./figures/figure_4_poster.jpg",
+       width = 4000, height = 2000, units = "px")
+
+(F4_raw <- cowplot::plot_grid(
+                          F4A_raw,
+                          F4B_raw,
+                          F4C_raw,
+                          F4D_raw,
+                          F4E_raw,
+                          F4F_raw,
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
+                          label_size = 20)
+)
+ggsave("./figures/figure_4_raw.jpg",
        width = 4000, height = 2000, units = "px")

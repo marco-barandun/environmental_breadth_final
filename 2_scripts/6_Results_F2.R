@@ -23,22 +23,20 @@ annotate_text_size <- 5
 
 # ------ Import and filter data --------------------------------------------------------------------------
 
-niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
+niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v5_withMAD_min5.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
   left_join(read_csv("./3_generated_data/zones_v3.csv"), by = "Species")
 
 # Defining color palette
 mycolors <- c("#00000000", colorRampPalette(c("#FFFFD6FF", "yellow", "orange", "red"), alpha=TRUE)(20))
 
-
-
 # ------ Figure 2A: The latitudinal gradient of latitudinal range - Global, tree -------------
 
-F2A_data <- niche_data %>% filter(growthform == "tree"); range(F2A_data$lat_range_sd_g)
+F2A_data <- niche_data %>% filter(growthform == "tree"); range(F2A_data$lat_range_mad_g)
 F2A_breaks <- quantile(F2A_data[["lat_median_g"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2A <- ggplot(data = F2A_data,
-              aes(x = lat_median_g, y = lat_range_sd_g)) +
+              aes(x = lat_median_g, y = lat_range_mad_g)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2A_breaks,
@@ -49,20 +47,34 @@ F2A <- ggplot(data = F2A_data,
   
   ggtitle("Global, tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
-  coord_cartesian(ylim=c(0, 10))
+  coord_cartesian(xlim = c(-50, 60), ylim=c(0, 10))
+
+F2A_raw <- ggplot(data = F2A_data,
+                  aes(x = lat_median_g, y = lat_range_mad_g)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(-55, 75), ylim=c(0, 35))
 
 # ------ Figure 2B: The latitudinal gradient of latitudinal range - Global, non-tree -------------
 
-F2B_data <- niche_data %>% filter(growthform == "herb"); range(F2B_data$lat_range_sd_g)
+F2B_data <- niche_data %>% filter(growthform == "herb"); range(F2B_data$lat_range_mad_g)
 F2B_breaks <- quantile(F2B_data[["lat_median_g"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2B <- ggplot(data = F2B_data,
-              aes(x = lat_median_g, y = lat_range_sd_g)) +
+              aes(x = lat_median_g, y = lat_range_mad_g)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2B_breaks,
@@ -73,20 +85,33 @@ F2B <- ggplot(data = F2B_data,
   
   ggtitle("Global, non-tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   
   theme_classic() +
   theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
-  coord_cartesian(ylim=c(0, 10))
+  coord_cartesian(xlim = c(-50, 60), ylim=c(0, 10))
+
+F2B_raw <- ggplot(data = F2B_data,
+                  aes(x = lat_median_g, y = lat_range_mad_g)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(-55, 75), ylim=c(0, 35))
 
 # ------ Figure 2C: The latitudinal gradient of latitudinal range - Northern hemisphere, tree -------------
 
-F2C_data <- niche_data %>% filter(growthform == "tree"); range(F2C_data$lat_range_sd_g)
+F2C_data <- niche_data %>% filter(growthform == "tree"); range(F2C_data$lat_range_mad_g)
 F2C_breaks <- quantile(F2C_data[["lat_median_n"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2C <- ggplot(data = F2C_data,
-              aes(x = lat_median_n, y = lat_range_sd_n)) +
+              aes(x = lat_median_n, y = lat_range_mad_n)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2C_breaks,
@@ -103,7 +128,7 @@ F2C <- ggplot(data = F2C_data,
   
   ggtitle("Northern hemisphere, tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmlr %>%
@@ -120,17 +145,31 @@ F2C <- ggplot(data = F2C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
+F2C_raw <- ggplot(data = F2C_data,
+                  aes(x = lat_median_n, y = lat_range_mad_n)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Northern hemisphere, tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 85), ylim=c(0, 40))
+
 # ------ Figure 2D: The latitudinal gradient of latitudinal range - Northern hemisphere, non-tree -------------
 
-F2D_data <- niche_data %>% filter(growthform == "herb"); range(F2D_data$lat_range_sd_n)
+F2D_data <- niche_data %>% filter(growthform == "herb"); range(F2D_data$lat_range_mad_n)
 F2D_breaks <- quantile(F2D_data[["lat_median_n"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2D <- ggplot(data = F2D_data,
-              aes(x = lat_median_n, y = lat_range_sd_n)) +
+              aes(x = lat_median_n, y = lat_range_mad_n)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2D_breaks,
@@ -147,7 +186,7 @@ F2D <- ggplot(data = F2D_data,
   
   ggtitle("Northern hemisphere, non-tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmlr %>%
@@ -168,13 +207,26 @@ F2D <- ggplot(data = F2D_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
+F2D_raw <- ggplot(data = F2D_data,
+                  aes(x = lat_median_n, y = lat_range_mad_n)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Northern hemisphere, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 85), ylim=c(0, 40))
+
 # ------ Figure 2E: The latitudinal gradient of latitudinal range - Southern hemisphere, tree -------------
 
-F2E_data <- niche_data %>% filter(growthform == "tree"); range(F2E_data$lat_range_sd_s)
+F2E_data <- niche_data %>% filter(growthform == "tree"); range(F2E_data$lat_range_mad_s)
 F2E_breaks <- quantile(F2E_data[["lat_median_s"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2E <- ggplot(data = F2E_data,
-              aes(x = lat_median_s, y = lat_range_sd_s)) +
+              aes(x = lat_median_s, y = lat_range_mad_s)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2E_breaks,
@@ -191,7 +243,7 @@ F2E <- ggplot(data = F2E_data,
   
   ggtitle("Southern hemisphere, tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmlr %>%
@@ -208,17 +260,31 @@ F2E <- ggplot(data = F2E_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
+F2E_raw <- ggplot(data = F2E_data,
+                  aes(x = lat_median_s, y = lat_range_mad_s)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Southern hemisphere, tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 85), ylim=c(0, 40))
+
 # ------ Figure 2F: The latitudinal gradient of latitudinal range - Southern hemisphere, non-tree -------------
 
-F2F_data <- niche_data %>% filter(growthform == "herb"); range(F2F_data$lat_range_sd_s)
+F2F_data <- niche_data %>% filter(growthform == "herb"); range(F2F_data$lat_range_mad_s)
 F2F_breaks <- quantile(F2F_data[["lat_median_s"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F2F <- ggplot(data = F2F_data,
-              aes(x = lat_median_s, y = lat_range_sd_s)) +
+              aes(x = lat_median_s, y = lat_range_mad_s)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F2F_breaks,
@@ -235,7 +301,7 @@ F2F <- ggplot(data = F2F_data,
   
   ggtitle("Southern hemisphere, non-tree") +
   xlab("Latitudinal median") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 10, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_lmlr %>%
@@ -257,6 +323,19 @@ F2F <- ggplot(data = F2F_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 70))
 
+F2F_raw <- ggplot(data = F2F_data,
+                  aes(x = lat_median_s, y = lat_range_mad_s)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Southern hemisphere, non-tree") +
+  xlab("Latitudinal median") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 85), ylim=c(0, 40))
+
 # ------ Joining and saving the plots -------------------------------------------------------------
 
 (F2 <- cowplot::plot_grid(F2A,
@@ -272,7 +351,38 @@ F2F <- ggplot(data = F2F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-ggsave("./tmp/final/figure_2.jpg",
+ggsave("./figures/figure_2.jpg",
+       width = 4000, height = 2000, units = "px")
+
+# For poster
+(F2_poster <- cowplot::plot_grid(
+                          F2C,
+                          F2D,
+                          F2E,
+                          F2F,
+                          rel_widths = c(1, 1,
+                                         1, 1),
+                          ncol = 2, byrow = FALSE,
+                          labels = "AUTO",
+                          label_size = 20)
+)
+ggsave("./figures/figure_2_poster.jpg",
+       width = 4000, height = 2000, units = "px")
+
+(F2_raw <- cowplot::plot_grid(F2A_raw,
+                          F2B_raw,
+                          F2C_raw,
+                          F2D_raw,
+                          F2E_raw,
+                          F2F_raw,
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
+                          label_size = 20)
+)
+ggsave("./figures/figure_2_raw.jpg",
        width = 4000, height = 2000, units = "px")
 
 

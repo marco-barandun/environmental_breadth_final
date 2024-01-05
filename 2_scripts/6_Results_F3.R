@@ -20,10 +20,13 @@ allres_lmlr <- as.data.frame(allres_lmlr)
 element_text_size <- 17
 element_title_size <- 15
 annotate_text_size <- 5
+element_text_size_raw <- 13
+annotate_text_size_raw <- 3
+
 
 # ------ Import and filter data --------------------------------------------------------------------------
 
-niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v4.csv") %>%
+niche_data <- read_csv("./3_generated_data/niche_data_final_summarized_v5_withMAD_min5.csv") %>%
   mutate(e_breadth = (env_breadth*mess)^(1/4)) %>%
   left_join(read_csv("./3_generated_data/zones_v3.csv"), by = "Species")
 
@@ -34,11 +37,11 @@ mycolors <- c("#00000000", colorRampPalette(c("#FFFFD6FF", "yellow", "orange", "
 
 # ------ Figure 3A: Environmental breadth and latitudinal range - Global, tree -------------
 
-F3A_data <- niche_data %>% filter(growthform == "tree"); range(F3A_data$lat_range_sd_g)
+F3A_data <- niche_data %>% filter(growthform == "tree"); range(F3A_data$lat_range_mad_g)
 F3A_breaks <- quantile(F3A_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3A <- ggplot(data = F3A_data,
-              aes(x = e_breadth, y = lat_range_sd_g)) +
+              aes(x = e_breadth, y = lat_range_mad_g)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3A_breaks,
@@ -53,20 +56,34 @@ F3A <- ggplot(data = F3A_data,
   
   ggtitle("Global, tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
-  coord_cartesian(ylim=c(0, 10))
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 10))
+
+F3A_raw <- ggplot(data = F3A_data,
+                  aes(x = e_breadth, y = lat_range_mad_g)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
 
 # ------ Figure 3B: The latitudinal gradient of latitudinal range - Global, herb -------------
 
-F3B_data <- niche_data %>% filter(growthform == "herb"); range(F3B_data$lat_range_sd_g)
+F3B_data <- niche_data %>% filter(growthform == "herb"); range(F3B_data$lat_range_mad_g)
 F3B_breaks <- quantile(F3B_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3B <- ggplot(data = F3B_data,
-              aes(x = e_breadth, y = lat_range_sd_g)) +
+              aes(x = e_breadth, y = lat_range_mad_g)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3B_breaks,
@@ -81,20 +98,35 @@ F3B <- ggplot(data = F3B_data,
   
   ggtitle("Global, non-tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
-  coord_cartesian(ylim=c(0, 10))
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 10))
+
+F3B_raw <- ggplot(data = F3B_data,
+                  aes(x = e_breadth, y = lat_range_mad_g)) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(bins = 20, show.legend = FALSE, aes(colour = ..level..)) + # Use density level for color mapping
+  scale_colour_gradientn(colours = mycolors) + # Apply your custom colors
+  ggtitle("Global, non-tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw),         
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
 
 # ------ Figure 3C: The latitudinal gradient of latitudinal range - Northern hemisphere, tree -------------
 
-F3C_data <- niche_data %>% filter(growthform == "tree"); range(F3C_data$lat_range_sd_g)
+F3C_data <- niche_data %>% filter(growthform == "tree") %>%
+  mutate(lat_median_group = ifelse(lat_median_n < 10, "tropical", "else")); range(F3C_data$lat_range_mad_g)
 F3C_breaks <- quantile(F3C_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3C <- ggplot(data = F3C_data,
-              aes(x = e_breadth, y = lat_range_sd_n)) +
+              aes(x = e_breadth, y = lat_range_mad_n)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3C_breaks,
@@ -111,7 +143,7 @@ F3C <- ggplot(data = F3C_data,
   
   ggtitle("Northern hemisphere, tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_eblr %>%
@@ -128,17 +160,54 @@ F3C <- ggplot(data = F3C_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
+# Reordering the factor levels
+F3C_data$lat_median_group <- factor(F3C_data$lat_median_group, levels = c("tropical", "else"))
+
+# Ensure annotation_data has the same levels for lat_median_group
+F3C_annotation_data <- data.frame(
+  lat_median_group = factor(c("tropical", "else"), levels = c("tropical", "else")),
+  x = c(0.20, 0.20),
+  y = c(30, 30),
+  label = c(paste("β (tropical) =\n", allres_eblr %>%
+                    filter(hemisphere == "North", growthform == "tree", zone == "tropical") %>%
+                    .$valse %>% 
+                    first()), 
+            paste("β (else) =\n", allres_eblr %>%
+                    filter(hemisphere == "North", growthform == "tree", zone == "else") %>%
+                    .$valse %>% 
+                    first()))
+)
+
+# Create the plot
+F3C_raw <- ggplot(data = F3C_data %>% filter(!is.na(lat_median_group)), aes(x = e_breadth, y = lat_range_mad_n)) +
+  facet_wrap(~lat_median_group) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(aes(colour = ..level..), bins = 20, show.legend = FALSE) +
+  scale_colour_gradientn(colours = mycolors) +
+  geom_smooth(color = "magenta", size = 3, method = "lm", na.rm = TRUE, show.legend = FALSE) +
+  geom_text(data = F3C_annotation_data, aes(x = x, y = y, label = label), size = annotate_text_size_raw, inherit.aes = FALSE) + # Adjusted size for visibility
+  ggtitle("Northern hemisphere, tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw), 
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
+
+
 # ------ Figure 3D: The latitudinal gradient of latitudinal range - Northern hemisphere, herb -------------
 
-F3D_data <- niche_data %>% filter(growthform == "herb"); range(F3D_data$lat_range_sd_n)
+F3D_data <- niche_data %>% filter(growthform == "herb") %>%
+  mutate(lat_median_group = ifelse(lat_median_n < 10, "tropical", "else")); range(F3D_data$lat_range_mad_n)
 F3D_breaks <- quantile(F3D_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3D <- ggplot(data = F3D_data,
-              aes(x = e_breadth, y = lat_range_sd_n)) +
+              aes(x = e_breadth, y = lat_range_mad_n)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3D_breaks,
@@ -155,7 +224,7 @@ F3D <- ggplot(data = F3D_data,
   
   ggtitle("Northern hemisphere, non-tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_eblr %>%
@@ -172,17 +241,58 @@ F3D <- ggplot(data = F3D_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
+# Reordering the factor levels
+F3D_data$lat_median_group <- factor(F3D_data$lat_median_group, levels = c("tropical", "else"))
+
+# Ensure annotation_data has the same levels for lat_median_group
+F3D_annotation_data <- data.frame(
+  lat_median_group = factor(c("tropical", "else"), levels = c("tropical", "else")),
+  x = c(0.20, 0.20),
+  y = c(30, 30),
+  label = c(paste("β (tropical) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "North") %>%
+                    filter(growthform == "herb") %>%
+                    filter(zone == "tropical") %>%
+                    .$valse), 
+            paste("β (else) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "North") %>%
+                    filter(growthform == "herb") %>%
+                    filter(zone == "else") %>%
+                    .$valse))
+)
+
+# Create the plot
+F3D_raw <- ggplot(data = F3D_data %>% filter(!is.na(lat_median_group)), aes(x = e_breadth, y = lat_range_mad_n)) +
+  facet_wrap(~lat_median_group) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(aes(colour = ..level..), bins = 20, show.legend = FALSE) +
+  scale_colour_gradientn(colours = mycolors) +
+  geom_smooth(color = "magenta", size = 3, method = "lm", na.rm = TRUE, show.legend = FALSE) +
+  geom_text(data = F3D_annotation_data, aes(x = x, y = y, label = label), size = annotate_text_size_raw, inherit.aes = FALSE) + # Adjusted size for visibility
+  ggtitle("Northern hemisphere, non-tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw), 
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
+
+
 # ------ Figure 3E: The latitudinal gradient of latitudinal range - Southern hemisphere, tree -------------
 
-F3E_data <- niche_data %>% filter(growthform == "tree"); range(F3E_data$lat_range_sd_s)
+F3E_data <- niche_data %>% filter(growthform == "tree") %>%
+  mutate(lat_median_group = ifelse(lat_median_s < 10, "tropical", "else")); range(F3E_data$lat_range_mad_s)
 F3E_breaks <- quantile(F3E_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3E <- ggplot(data = F3E_data,
-              aes(x = e_breadth, y = lat_range_sd_s)) +
+              aes(x = e_breadth, y = lat_range_mad_s)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3E_breaks,
@@ -199,7 +309,7 @@ F3E <- ggplot(data = F3E_data,
   
   ggtitle("Southern hemisphere, tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_eblr %>%
@@ -216,17 +326,57 @@ F3E <- ggplot(data = F3E_data,
                            .$valse)) +
   
   theme_classic() +
-  theme(text = element_text(size = element_text_size),         title = element_text(size = element_title_size)) +  
+  theme(text = element_text(size = element_text_size),         
+        title = element_text(size = element_title_size)) +  
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
+# Reordering the factor levels
+F3E_data$lat_median_group <- factor(F3E_data$lat_median_group, levels = c("tropical", "else"))
+
+# Ensure annotation_data has the same levels for lat_median_group
+F3E_annotation_data <- data.frame(
+  lat_median_group = factor(c("tropical", "else"), levels = c("tropical", "else")),
+  x = c(0.20, 0.20),
+  y = c(30, 30),
+  label = c(paste("β (tropical) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "South") %>%
+                    filter(growthform == "tree") %>%
+                    filter(zone == "tropical") %>%
+                    .$valse), 
+            paste("β (else) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "South") %>%
+                    filter(growthform == "tree") %>%
+                    filter(zone == "else") %>%
+                    .$valse))
+)
+
+# Create the plot
+F3E_raw <- ggplot(data = F3E_data %>% filter(!is.na(lat_median_group)), aes(x = e_breadth, y = lat_range_mad_s)) +
+  facet_wrap(~lat_median_group) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(aes(colour = ..level..), bins = 20, show.legend = FALSE) +
+  scale_colour_gradientn(colours = mycolors) +
+  geom_smooth(color = "magenta", size = 3, method = "lm", na.rm = TRUE, show.legend = FALSE) +
+  geom_text(data = F3E_annotation_data, aes(x = x, y = y, label = label), size = annotate_text_size_raw, inherit.aes = FALSE) + # Adjusted size for visibility
+  ggtitle("Southern hemisphere, tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw), 
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
+
 # ------ Figure 3F: The latitudinal gradient of latitudinal range - Southern hemisphere, herb -------------
 
-F3F_data <- niche_data %>% filter(growthform == "herb"); range(F3F_data$lat_range_sd_s)
+F3F_data <- niche_data %>% filter(growthform == "herb") %>%
+  mutate(lat_median_group = ifelse(lat_median_s < 10, "tropical", "else")); range(F3F_data$lat_range_mad_s)
 F3F_breaks <- quantile(F3F_data[["e_breadth"]], probs = seq(0, 1, by = 0.05), na.rm = TRUE)
 
 F3F <- ggplot(data = F3F_data,
-              aes(x = e_breadth, y = lat_range_sd_s)) +
+              aes(x = e_breadth, y = lat_range_mad_s)) +
   
   geom_density_2d_filled(bins = 20, show.legend = FALSE) +
   stat_summary_bin(breaks = F3F_breaks,
@@ -243,7 +393,7 @@ F3F <- ggplot(data = F3F_data,
   
   ggtitle("Southern hemisphere, non-tree") +
   xlab("Environmental breadth") +
-  ylab("Latitudinal range (SD)") +
+  ylab("Latitudinal range (MAD)") +
   annotate("text", x = 0.15, y = 7, size = annotate_text_size, 
            label = paste("β (tropical) =\n",
                          allres_eblr %>%
@@ -265,6 +415,44 @@ F3F <- ggplot(data = F3F_data,
   scale_fill_manual(values = mycolors) +
   coord_cartesian(ylim = c(0, 7.5), xlim = c(0, 1))
 
+# Reordering the factor levels
+F3F_data$lat_median_group <- factor(F3F_data$lat_median_group, levels = c("tropical", "else"))
+
+# Ensure annotation_data has the same levels for lat_median_group
+F3F_annotation_data <- data.frame(
+  lat_median_group = factor(c("tropical", "else"), levels = c("tropical", "else")),
+  x = c(0.20, 0.20),
+  y = c(30, 30),
+  label = c(paste("β (tropical) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "South") %>%
+                    filter(growthform == "herb") %>%
+                    filter(zone == "tropical") %>%
+                    .$valse), 
+            paste("β (else) =\n",
+                  allres_eblr %>%
+                    filter(hemisphere == "South") %>%
+                    filter(growthform == "herb") %>%
+                    filter(zone == "else") %>%
+                    .$valse))
+)
+
+# Create the plot
+F3F_raw <- ggplot(data = F3F_data %>% filter(!is.na(lat_median_group)), aes(x = e_breadth, y = lat_range_mad_s)) +
+  facet_wrap(~lat_median_group) +
+  geom_point(alpha = 0.5) +
+  geom_density_2d(aes(colour = ..level..), bins = 20, show.legend = FALSE) +
+  scale_colour_gradientn(colours = mycolors) +
+  geom_smooth(color = "magenta", size = 3, method = "lm", na.rm = TRUE, show.legend = FALSE) +
+  geom_text(data = F3F_annotation_data, aes(x = x, y = y, label = label), size = annotate_text_size_raw, inherit.aes = FALSE) + # Adjusted size for visibility
+  ggtitle("Southern hemisphere, non-tree") +
+  xlab("Environmental breadth") +
+  ylab("Latitudinal range (MAD)") +
+  theme_classic() +
+  theme(text = element_text(size = element_text_size_raw), 
+        title = element_text(size = element_title_size)) +
+  coord_cartesian(xlim = c(0, 1), ylim=c(0, 40))
+
 # ------ Joining and saving the plots -------------------------------------------------------------
 
 (F3 <- cowplot::plot_grid(F3A,
@@ -280,5 +468,22 @@ F3F <- ggplot(data = F3F_data,
                                     "B", "D", "F"),
                          label_size = 20)
 )
-ggsave("./tmp/final/figure_3.jpg",
+ggsave("./figures/figure_3.jpg",
+       width = 4000, height = 2000, units = "px")
+
+(F3_raw <- cowplot::plot_grid(
+                          F3A_raw,
+                          F3B_raw,
+                          F3C_raw,
+                          F3D_raw,
+                          F3E_raw,
+                          F3F_raw,
+                          rel_widths = c(1.3, 1, 1,
+                                         1.3, 1, 1),
+                          ncol = 3, byrow = FALSE,
+                          labels = c("A", "C", "E",
+                                     "B", "D", "F"),
+                          label_size = 20)
+)
+ggsave("./figures/figure_3_raw.jpg",
        width = 4000, height = 2000, units = "px")

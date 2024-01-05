@@ -1,0 +1,17 @@
+model,type,zone,hemisphere,growthform,valci,valse,lower_bci,upper_bci,mean_b
+env.breadth vs lat range,Global,tropical,North,tree,"2.635 (2.393, 2.877)",2.646 ± 0.145,2.3931336605043274,2.8771939537806106,2.634599476006501
+env.breadth vs lat range,Hemisphere Specific,tropical,North,tree,"2.182 (2.002, 2.38)",2.188 ± 0.112,2.001686600709887,2.3801140679120216,2.1824358615093264
+env.breadth vs lat range,Global,else,North,tree,"5.832 (5.55, 6.108)",5.834 ± 0.157,5.550038296409626,6.107729817340527,5.831687671262906
+env.breadth vs lat range,Hemisphere Specific,else,North,tree,"5.766 (5.485, 6.067)",5.762 ± 0.174,5.484822122441084,6.06743091460783,5.766274294669233
+env.breadth vs lat range,Global,tropical,South,tree,"4.108 (3.702, 4.508)",4.115 ± 0.216,3.7018380139482496,4.5076779825177375,4.107725567361001
+env.breadth vs lat range,Hemisphere Specific,tropical,South,tree,"2.199 (1.906, 2.499)",2.207 ± 0.172,1.9057643029494695,2.4986769074552444,2.1986785538644966
+env.breadth vs lat range,Global,else,South,tree,"7.969 (7.626, 8.308)",7.97 ± 0.177,7.625783566875209,8.307710668272978,7.968750882702634
+env.breadth vs lat range,Hemisphere Specific,else,South,tree,"8.105 (7.761, 8.435)",8.106 ± 0.166,7.760819290310163,8.43459448143891,8.10539961874795
+env.breadth vs lat range,Global,tropical,North,herb,"4.603 (4.371, 4.828)",4.598 ± 0.142,4.370580596491556,4.82753809013131,4.6028903280582085
+env.breadth vs lat range,Hemisphere Specific,tropical,North,herb,"3.186 (2.994, 3.367)",3.188 ± 0.111,2.993510381300752,3.367202496697602,3.1855669712486585
+env.breadth vs lat range,Global,else,North,herb,"6.158 (6.033, 6.283)",6.161 ± 0.066,6.033302582433095,6.282821801760463,6.158209167026376
+env.breadth vs lat range,Hemisphere Specific,else,North,herb,"6.056 (5.935, 6.177)",6.052 ± 0.068,5.935271240411512,6.1765538995981215,6.0559367649619436
+env.breadth vs lat range,Global,tropical,South,herb,"5.457 (5.09, 5.834)",5.464 ± 0.224,5.0900198950046285,5.833573945205236,5.456900378885724
+env.breadth vs lat range,Hemisphere Specific,tropical,South,herb,"3.2 (2.901, 3.481)",3.203 ± 0.166,2.900651157682653,3.480661757007547,3.1998623468682745
+env.breadth vs lat range,Global,else,South,herb,"7.324 (7.157, 7.506)",7.323 ± 0.083,7.15702016557963,7.505967849909277,7.324337286425697
+env.breadth vs lat range,Hemisphere Specific,else,South,herb,"7.752 (7.598, 7.912)",7.755 ± 0.079,7.598384932101118,7.912355828474705,7.752135855029263
